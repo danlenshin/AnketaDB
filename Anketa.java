@@ -51,4 +51,39 @@ public class Anketa
         //Set questions to the new questions array
         this.questions = newQuestions;
     }
+
+    //Deletes the question at a certain index
+    public void deleteQuestion(int index)
+    {
+        //Create new questions array
+        int newSize = this.questions.length + 1;
+        AnketaQuestion[] newQuestions = new AnketaQuestion[newSize];
+
+        //Add questions in original questions, skipping the question at the specified index
+        boolean questionSkipped = false;
+        for(int i = 0; i < this.questions.length; i++)
+        {
+            if(i == index)
+            {
+                questionSkipped = true;
+            }
+            else if(i != index && !questionSkipped)
+            {
+                newQuestions[i] = this.questions[i];
+            }
+            else if(i != index && questionSkipped)
+            {
+                newQuestions[i] = this.questions[i - 1];
+            }
+        }
+
+        //Set questions to the new questions array
+        this.questions = newQuestions;
+    }
+
+    //Replaces the question at a certain index
+    public void replaceQuestion(AnketaQuestion newQuestion, int index)
+    {
+        this.questions[index] = newQuestion;
+    }
 }
