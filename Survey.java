@@ -1,12 +1,14 @@
 public class Survey 
 {
     public String name; //name of Survey
+    public int year;
     public Question[] questions; //Questions
 
     //Constructor
-    public Survey(String name)
+    public Survey(String name, int year)
     {
         this.name = name;
+        this.year = year;
         questions = new Question[0];
     }
 
@@ -14,6 +16,11 @@ public class Survey
     public String getName()
     {
         return name;
+    }
+
+    public int getYear()
+    {
+        return year;
     }
 
     public Question[] getQuestions()
@@ -26,64 +33,49 @@ public class Survey
         this.name = name;
     }
 
-    //Adds a question to the questions array at the desired index
-    public void addQuestion(Question question, int index)
+    public void setYear(int year)
+    {
+        this.year = year;
+    }
+
+    //Adds a question to the questions array
+    public void addQuestion(Question question)
     {
         //Create new questions array
         int newSize = this.questions.length + 1;
         Question[] newQuestions = new Question[newSize];
 
-        //Add questions in original questions before index
-        for(int i = 0; i < index; i++)
+        for(int i = 0; i < this.questions.length; i++)
         {
             newQuestions[i] = this.questions[i];
         }
 
-        //Add new question at desired index
-        newQuestions[index] = question;
+        newQuestions[newSize - 1] = this.questions[newSize - 2];
 
-        //Add questions in original questions before index
-        for(int i = index + 1; i < newQuestions.length; i++)
-        {
-            newQuestions[i] = this.questions[i - 1];
-        }
-
-        //Set questions to the new questions array
         this.questions = newQuestions;
     }
 
-    //Deletes the question at a certain index
-    public void deleteQuestion(int index)
+    //Creates an INSERT INTO statement which inserts the survey into the surveys table
+    public String toInsertStatement()
     {
-        //Create new questions array
-        int newSize = this.questions.length + 1;
-        Question[] newQuestions = new Question[newSize];
+        String statement = "INSERT INTO surveys ("; //Creates statement string
 
-        //Add questions in original questions, skipping the question at the specified index
-        boolean questionSkipped = false;
-        for(int i = 0; i < this.questions.length; i++)
+        //Adds columns to statement string
+        statement += "surveyname, surveyyear, ";
+        for(int i = 0; i < questions.length; i++)
         {
-            if(i == index)
-            {
-                questionSkipped = true;
-            }
-            else if(i != index && !questionSkipped)
-            {
-                newQuestions[i] = this.questions[i];
-            }
-            else if(i != index && questionSkipped)
-            {
-                newQuestions[i] = this.questions[i - 1];
-            }
+            statement += "q" + (i+1) + ", q" + (i+1) + "length, ";
         }
+        statement += ") VALUES (";
 
-        //Set questions to the new questions array
-        this.questions = newQuestions;
-    }
+        //Adds values to statement string
+        statement += "\'" + name + "\', " + year + ", ";
+        for(int i = 0; i < questions.length-1; i++)
+        {
+            statement += "\'" + questions[i].getText() + "\', " + (questions[i].getIsLong() ? 1 : 0) + ", ";
+        }
+        statement += "\'" + questions[questions.length - 1].getText() + "\', " + (questions[questions.length - 1].getIsLong() ? 1 : 0) + ");";
 
-    //Replaces the question at a certain index
-    public void replaceQuestion(Question newQuestion, int index)
-    {
-        this.questions[index] = newQuestion;
+        return statement;
     }
 }

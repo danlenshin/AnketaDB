@@ -1,41 +1,33 @@
 public class Question 
 {
-    public String question; //Text of question
-    public String type; //Type of question (short answer or long answer)
+    public String text; //Text of question
+    public boolean isLong;
 
     //Constructor
-    public Question(String question, String type)
+    public Question(String text, boolean isLong)
     {
-        this.question = question;
-
-        if(type.equals("Short") || type.equals("Long"))
-        {
-            this.type = type;
-        }
-        else
-        {
-            this.type = "Short";
-        }
+        this.text = text;
+        this.isLong = isLong;
     }
 
     //Getter and setter methods
-    public String getQuestion()
+    public String getText()
     {
-        return question;
+        return text;
     }
 
-    public String getType()
+    public boolean getIsLong()
     {
-        return type;
+        return isLong;
     }
 
-    public void setQuestion(String question)
+    public void setText(String text)
     {
-        this.question = question;
+        this.text = text;
     }
 
-    public void setType(String type)
+    public void setIsLong(boolean isLong)
     {
-        this.type = type;
+        this.isLong = isLong;
     }
 }
