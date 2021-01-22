@@ -1,10 +1,10 @@
-public class AnketaQuestion 
+public class Question 
 {
     public String question; //Text of question
     public String type; //Type of question (short answer or long answer)
 
     //Constructor
-    public AnketaQuestion(String question, String type)
+    public Question(String question, String type)
     {
         this.question = question;
 

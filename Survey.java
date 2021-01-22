@@ -1,13 +1,13 @@
-public class Anketa 
+public class Survey 
 {
-    public String name; //name of Anketa
-    public AnketaQuestion[] questions; //Questions
+    public String name; //name of Survey
+    public Question[] questions; //Questions
 
     //Constructor
-    public Anketa(String name)
+    public Survey(String name)
     {
         this.name = name;
-        questions = new AnketaQuestion[0];
+        questions = new Question[0];
     }
 
     //Getter and setter methods
@@ -16,7 +16,7 @@ public class Anketa
         return name;
     }
 
-    public AnketaQuestion[] getQuestions()
+    public Question[] getQuestions()
     {
         return questions;
     }
@@ -27,11 +27,11 @@ public class Anketa
     }
 
     //Adds a question to the questions array at the desired index
-    public void addQuestion(AnketaQuestion question, int index)
+    public void addQuestion(Question question, int index)
     {
         //Create new questions array
         int newSize = this.questions.length + 1;
-        AnketaQuestion[] newQuestions = new AnketaQuestion[newSize];
+        Question[] newQuestions = new Question[newSize];
 
         //Add questions in original questions before index
         for(int i = 0; i < index; i++)
@@ -57,7 +57,7 @@ public class Anketa
     {
         //Create new questions array
         int newSize = this.questions.length + 1;
-        AnketaQuestion[] newQuestions = new AnketaQuestion[newSize];
+        Question[] newQuestions = new Question[newSize];
 
         //Add questions in original questions, skipping the question at the specified index
         boolean questionSkipped = false;
@@ -82,7 +82,7 @@ public class Anketa
     }
 
     //Replaces the question at a certain index
-    public void replaceQuestion(AnketaQuestion newQuestion, int index)
+    public void replaceQuestion(Question newQuestion, int index)
     {
         this.questions[index] = newQuestion;
     }
