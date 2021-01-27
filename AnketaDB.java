@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.SwingConstants;
 import java.awt.Container;
 import java.awt.CardLayout;
 import java.awt.event.ActionListener;
@@ -66,6 +67,7 @@ public class AnketaDB extends JFrame
         setResizable(false); //Disables the user from resizing the JFrame
         setSize(800, 600); //Sets the size of the JFrame to 800 x 600 pixels
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Sets it so that the program will close every time the frame is closed
+        setTitle("AnketaDB by Daniel Lenshin");
 
         /*
         Creating the main panel and adding it to cards
@@ -74,12 +76,56 @@ public class AnketaDB extends JFrame
         main.setLayout(null);
 
         JButton mainCreateSurveyButton = new JButton("Создать Анкету");
-        mainCreateSurveyButton.setBounds(100, 50, 250, 50);
+        mainCreateSurveyButton.setBounds(100, 20, 250, 50);
         main.add(mainCreateSurveyButton);
 
         JButton mainListOfSurveysButton = new JButton("Список Анкет");
-        mainListOfSurveysButton.setBounds(350, 50, 250, 50);
-        main.add(mainCreateSurveyButton);
+        mainListOfSurveysButton.setBounds(400, 20, 250, 50);
+        main.add(mainListOfSurveysButton);
+
+        JLabel mainSearchLabel = new JLabel("Поиск", SwingConstants.RIGHT);
+        mainSearchLabel.setBounds(100, 70, 230, 50);
+        main.add(mainSearchLabel);
+
+        JLabel mainSearchNameLabel = new JLabel("Имя");
+        mainSearchNameLabel.setBounds(150, 120, 60, 20);
+        main.add(mainSearchNameLabel);
+
+        JTextField mainSearchNameTextField = new JTextField();
+        mainSearchNameTextField.setBounds(180, 120, 250, 20);
+        main.add(mainSearchNameTextField);
+
+        JLabel mainSearchYearLabel = new JLabel("Год");
+        mainSearchYearLabel.setBounds(450, 120, 60, 20);
+        main.add(mainSearchYearLabel);
+
+        JTextField mainSearchYearTextField = new JTextField();
+        mainSearchYearTextField.setBounds(480, 120, 150, 20);
+        main.add(mainSearchYearTextField);
+
+        JLabel mainSearchSurveyLabel = new JLabel("Анкета", SwingConstants.RIGHT);
+        mainSearchSurveyLabel.setBounds(95, 150, 80, 20);
+        main.add(mainSearchSurveyLabel);
+
+        JTextField mainSearchSurveyTextField = new JTextField();
+        mainSearchSurveyTextField.setBounds(180, 150, 450, 20);
+        main.add(mainSearchSurveyTextField);
+
+        JButton mainSearchButton = new JButton("Искать");
+        mainSearchButton.setBounds(300, 200, 200, 50);
+        main.add(mainSearchButton);
+
+        JLabel mainResultsLabel = new JLabel("Результаты", SwingConstants.CENTER);
+        mainResultsLabel.setBounds(300, 280, 200, 20);
+        main.add(mainResultsLabel);
+
+        JList<String> mainResultsList = new JList();
+        mainResultsList.setBounds(150, 300, 500, 175);
+        main.add(mainResultsList);
+
+        JButton mainSelectButton = new JButton("Выбрать");
+        mainSelectButton.setBounds(300, 490, 200, 50);
+        main.add(mainSelectButton);
 
         //!TEST PORTION
         container.add("main", main);
