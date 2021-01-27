@@ -72,8 +72,8 @@ public class AnketaDB extends JFrame
         /*
         Creating the main panel and adding it to cards
         */
-        JPanel main = new JPanel();
-        main.setLayout(null);
+        JPanel main = new JPanel(); //Creates new JPanel for the main window
+        main.setLayout(null); //Sets the layout of the main panel as null (since no layout manager is being used)
 
         JButton mainCreateSurveyButton = new JButton("Создать Анкету");
         mainCreateSurveyButton.setBounds(100, 20, 250, 50);
@@ -127,17 +127,24 @@ public class AnketaDB extends JFrame
         mainSelectButton.setBounds(300, 490, 200, 50);
         main.add(mainSelectButton);
 
-        //!TEST PORTION
-        container.add("main", main);
-        cards.show(container, "main");
-        //!TEST PORTION
+        container.add("main", main); //Adds main panel to the container
+
+        /*
+        Creating the list of surveys panel and adding it to cards
+        */
+        JPanel listOfSurveys = new JPanel();
+        listOfSurveys.setLayout(null);
+
+        
+
+        cards.show(container, "main"); //Displays main panel on startup
+        setVisible(true); //Makes the JFrame visible on the screen
     }
 
     public static void main(String[] args) throws IOException, SQLException
     {
         //!TEST PORTION
         JFrame frame = new AnketaDB();
-        frame.setVisible(true);
         //!TEST PORTION
     }
 }
