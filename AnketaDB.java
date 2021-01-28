@@ -164,18 +164,26 @@ public class AnketaDB extends JFrame
         listOfSurveys.add(listOfSurveysResultsList);
 
         JButton listOfSurveysEditButton = new JButton("Редактировать");
-        listOfSurveysEditButton.setBounds(50, 480, 200, 50);
+        listOfSurveysEditButton.setBounds(30, 480, 170, 50);
         listOfSurveys.add(listOfSurveysEditButton);
 
         JButton listOfSurveysDeleteButton = new JButton("Удалить");
-        listOfSurveysDeleteButton.setBounds(300, 480, 200, 50);
+        listOfSurveysDeleteButton.setBounds(220, 480, 170, 50);
         listOfSurveys.add(listOfSurveysDeleteButton);
 
         JButton listOfSurveysFillInButton = new JButton("Выполнить");
-        listOfSurveysFillInButton.setBounds(550, 480, 200, 50);
+        listOfSurveysFillInButton.setBounds(410, 480, 170, 50);
         listOfSurveys.add(listOfSurveysFillInButton);
 
+        JButton listOfSurveysBackButton = new JButton("Назад");
+        listOfSurveysBackButton.setBounds(600, 480, 170, 50);
+        listOfSurveys.add(listOfSurveysBackButton);
+
         container.add("listOfSurveys", listOfSurveys);
+
+        /*
+        Creating the survey creation window and adding it to cards
+        */
 
         //!TEST CODE
         cards.show(container, "listOfSurveys");
