@@ -135,16 +135,58 @@ public class AnketaDB extends JFrame
         JPanel listOfSurveys = new JPanel();
         listOfSurveys.setLayout(null);
 
-        
+        JLabel listOfSurveysSearchLabel = new JLabel("Поиск");
+        listOfSurveysSearchLabel.setBounds(200, 20, 230, 20);
+        listOfSurveys.add(listOfSurveysSearchLabel);
 
-        cards.show(container, "main"); //Displays main panel on startup
-        setVisible(true); //Makes the JFrame visible on the screen
+        JLabel listOfSurveysSearchNameLabel = new JLabel("Название", SwingConstants.RIGHT);
+        listOfSurveysSearchNameLabel.setBounds(0, 50, 190, 20);
+        listOfSurveys.add(listOfSurveysSearchNameLabel);
+
+        JTextField listOfSurveysSearchNameTextField = new JTextField();
+        listOfSurveysSearchNameTextField.setBounds(200, 50, 330, 20);
+        listOfSurveys.add(listOfSurveysSearchNameTextField);
+
+        JLabel listOfSurveysSearchYearLabel = new JLabel("Год");
+        listOfSurveysSearchYearLabel.setBounds(540, 50, 50, 20);
+        listOfSurveys.add(listOfSurveysSearchYearLabel);
+
+        JTextField listOfSurveysSearchYearTextField = new JTextField();
+        listOfSurveysSearchYearTextField.setBounds(570, 50, 80, 20);
+        listOfSurveys.add(listOfSurveysSearchYearTextField);
+
+        JButton listOfSurveysSearchButton = new JButton("Искать");
+        listOfSurveysSearchButton.setBounds(300, 80, 200, 50);
+        listOfSurveys.add(listOfSurveysSearchButton);
+
+        JList<String> listOfSurveysResultsList = new JList();
+        listOfSurveysResultsList.setBounds(150, 160, 500, 300);
+        listOfSurveys.add(listOfSurveysResultsList);
+
+        JButton listOfSurveysEditButton = new JButton("Редактировать");
+        listOfSurveysEditButton.setBounds(50, 480, 200, 50);
+        listOfSurveys.add(listOfSurveysEditButton);
+
+        JButton listOfSurveysDeleteButton = new JButton("Удалить");
+        listOfSurveysDeleteButton.setBounds(300, 480, 200, 50);
+        listOfSurveys.add(listOfSurveysDeleteButton);
+
+        JButton listOfSurveysFillInButton = new JButton("Выполнить");
+        listOfSurveysFillInButton.setBounds(550, 480, 200, 50);
+        listOfSurveys.add(listOfSurveysFillInButton);
+
+        container.add("listOfSurveys", listOfSurveys);
+
+        //!TEST CODE
+        cards.show(container, "listOfSurveys");
+        setVisible(true);
+        //!TEST CODE
     }
 
     public static void main(String[] args) throws IOException, SQLException
     {
-        //!TEST PORTION
+        //!TEST CODE
         JFrame frame = new AnketaDB();
-        //!TEST PORTION
+        //!TEST CODE
     }
 }
