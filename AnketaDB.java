@@ -21,7 +21,9 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
 import java.awt.Container;
+import java.awt.Toolkit;
 import java.awt.CardLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -75,9 +77,9 @@ public class AnketaDB extends JFrame
         JPanel main = new JPanel(); //Creates new JPanel for the main window
         main.setLayout(null); //Sets the layout of the main panel as null (since no layout manager is being used)
 
-        JButton mainCreateSurveyButton = new JButton("Создать Анкету");
-        mainCreateSurveyButton.setBounds(100, 20, 250, 50);
-        main.add(mainCreateSurveyButton);
+        JButton mainSurveyCreationButton = new JButton("Создать Анкету");
+        mainSurveyCreationButton.setBounds(100, 20, 250, 50);
+        main.add(mainSurveyCreationButton);
 
         JButton mainListOfSurveysButton = new JButton("Список Анкет");
         mainListOfSurveysButton.setBounds(400, 20, 250, 50);
@@ -184,11 +186,139 @@ public class AnketaDB extends JFrame
         /*
         Creating the survey creation window and adding it to cards
         */
+        JPanel surveyCreation = new JPanel();
+        surveyCreation.setLayout(null);
+
+        JLabel surveyCreationNameLabel = new JLabel("Название");
+        surveyCreationNameLabel.setBounds(150, 20, 100, 20);
+        surveyCreation.add(surveyCreationNameLabel);
+
+        JTextField surveyCreationNameTextField = new JTextField();
+        surveyCreationNameTextField.setBounds(210, 20, 440, 20);
+        surveyCreation.add(surveyCreationNameTextField);
+
+        JLabel surveyCreationYearLabel = new JLabel("Год");
+        surveyCreationYearLabel.setBounds(180, 50, 100, 20);
+        surveyCreation.add(surveyCreationYearLabel);
+
+        JTextField surveyCreationYearTextField = new JTextField();
+        surveyCreationYearTextField.setBounds(210, 50, 100, 20);
+        surveyCreation.add(surveyCreationYearTextField);
+
+        JLabel surveyCreationLastNameQuestionLabel = new JLabel("Фамилия");
+        surveyCreationLastNameQuestionLabel.setBounds(150, 100, 100, 20);
+        surveyCreation.add(surveyCreationLastNameQuestionLabel);
+
+        JTextField surveyCreationLastNameQuestionTextField = new JTextField();
+        surveyCreationLastNameQuestionTextField.setBounds(210, 100, 440, 20);
+        surveyCreationLastNameQuestionTextField.setEnabled(false);
+        surveyCreation.add(surveyCreationLastNameQuestionTextField);
+
+        JLabel surveyCreationFirstNameQuestionLabel = new JLabel("Имя", SwingConstants.RIGHT);
+        surveyCreationFirstNameQuestionLabel.setBounds(105, 125, 100, 20);
+        surveyCreation.add(surveyCreationFirstNameQuestionLabel);
+
+        JTextField surveyCreationFirstNameQuestionTextField = new JTextField();
+        surveyCreationFirstNameQuestionTextField.setBounds(210, 125, 440, 20);
+        surveyCreationFirstNameQuestionTextField.setEnabled(false);
+        surveyCreation.add(surveyCreationFirstNameQuestionTextField);
+
+        JButton surveyCreationCreateButton = new JButton("Сделать");
+        surveyCreationCreateButton.setBounds(240, getBounds().height - 80, 150, 30);
+        surveyCreation.add(surveyCreationCreateButton);
+
+        JButton surveyCreationCancelButton = new JButton("Отменить");
+        surveyCreationCancelButton.setBounds(410, getBounds().height - 80, 150, 30);
+        surveyCreation.add(surveyCreationCancelButton);
+
+        JButton surveyCreationAddLongQuestionButton = new JButton("Добавь Длинный Вопрос");
+        surveyCreationAddLongQuestionButton.setBounds(240, getBounds().height - 120, 320, 30);
+        surveyCreation.add(surveyCreationAddLongQuestionButton);
+
+        JButton surveyCreationAddShortQuestionButton = new JButton("Добавь Короткий Вопрос");
+        surveyCreationAddShortQuestionButton.setBounds(240, getBounds().height - 160, 320, 30);
+        surveyCreation.add(surveyCreationAddShortQuestionButton);
+
+        container.add("surveyCreation", surveyCreation);
+        
+        /*
+        Navigational ActionListeners
+        These ActionListeners are added to buttons which move between panels
+        */
+        causeToShowCard(mainListOfSurveysButton, "listOfSurveys", this, "Список Анкет");
+        causeToShowCard(mainSurveyCreationButton, "surveyCreation", this, "Создание Анкеты");
+        causeToShowCard(listOfSurveysBackButton, "main", this, "AnketaDB by Daniel Lenshin");
+        causeToShowCard(surveyCreationCancelButton, "main", this, "AnketaDB by Daniel Lenshin");
+
+        /*
+        Main Panel ActionListeners
+        */
+        mainSearchButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                String query = "SELECT id, surveyid, firstname, lastname FROM responses WHERE (firstname LIKE '%" + mainSearchNameTextField.getText() +
+                               "%'' AND year = " + mainSearchYearTextField.getText() +
+                               "AND surveyid = (SELECT id FROM surveys WHERE name LIKE '%" + mainSearchSurveyTextField.getText() +
+                               "%')) OR (lastname LIKE '%" + mainSearchNameTextField.getText() + "AND year = " + mainSearchYearTextField.getText() +
+                               "AND surveyid = (SELECT id FROM surveys WHERE name LIKE '%" + mainSearchSurveyTextField.getText() + "%'));";
+                
+                try
+                {
+                    results = statement.executeQuery(query); //Executes a query which returns all the rows matching the parameters of the search box
+                    String listElement = "";
+                    String[] listElements = new String[0];
+
+                    while(results.next())
+                    {
+                        listElement = results.getString("firstname") + " " + results.getString("lastname") + " | " + 
+                    }
+                }
+                catch(SQLException exception)
+                {
+                    System.out.println("mainSearchButton query failed");
+                }
+            }
+        });
 
         //!TEST CODE
-        cards.show(container, "listOfSurveys");
+        cards.show(container, "main");
         setVisible(true);
+        setSize(800, 600);
+        surveyCreationCreateButton.setBounds(240, getBounds().height - 80, 150, 30);
+        surveyCreationCancelButton.setBounds(410, getBounds().height - 80, 150, 30);
+        surveyCreationAddLongQuestionButton.setBounds(240, getBounds().height - 120, 320, 30);
+        surveyCreationAddShortQuestionButton.setBounds(240, getBounds().height - 160, 320, 30);
         //!TEST CODE
+    }
+
+    //Method which adds an ActionListener to a button which causes it to show a certain card and change the name of the frame
+    public void causeToShowCard(JButton button, String cardName, JFrame frame, String newTitle)
+    {
+        button.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                setSize(800, 600); //In order to reset size if it was changed by survey creation panel
+                frame.setTitle(newTitle); //Changes the title of the frame to the new title
+                cards.show(container, cardName); //Shows the card with the name cardName
+            }
+        });
+    }
+
+    //Method which adds an object to an array of the same kind of object
+    public Object[] pushElementToArray(Object[] array, Object element)
+    {
+        Object[] newArray = new Object[array.length + 1];
+
+        for(int i = 0; i < array.length; i++)
+        {
+            newArray[i] = array[i];
+        }
+
+        newArray[newArray.length - 1] = element;
+
+        return newArray;
     }
 
     public static void main(String[] args) throws IOException, SQLException
