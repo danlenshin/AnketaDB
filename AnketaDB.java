@@ -21,31 +21,38 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.SwingConstants;
 import java.awt.Container;
-import java.awt.Toolkit;
 import java.awt.CardLayout;
-import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class AnketaDB extends JFrame
 {
+    //Settings file objects
     File settingsFile; //File object for settings.json
     FileReader settingsReader; //FileReader object to read settingsFile
     String settingsFileString; //String which contains the contents of settingsFile
     JSONObject settings; //JSONObject which contains a JSONObject of the data in settingsFile
 
+    //Settings objects
     String username; //String which contains SQL server user username
     String password; //String which contains SQL server user password
     String address; //String which contains SQL server address
+    String schema; //String which contains schema on which the tables are located
     
+    //SQL Objects
     Connection databaseConnection; //Connection object which stores the connection to the SQL server
     Statement statement; //Statement object which stores statements to the SQL server
     ResultSet results; //ResultSet object which stores the results of SQL queries
 
+    //GUI Layout Objects
     CardLayout cards; //CardLayout object for creating a card layout
     Container container; //Container object which the card layout will be on
 
-    public AnketaDB() throws IOException, SQLException
+    //GUI List Objects
+    String[] mainResultsListElements = new String[0]; //Stores the elements of the response search list on the main screen
+    String[] listOfSurveysResultsListElements = new String[0]; //Stores the elements of the list of surveys list on the list of surveys screen
+
+    public AnketaDB() throws IOException, SQLException, JSONException
     {
         settingsFile = new File("settings.json"); //Sets settingsFile as settings.json
         settingsReader = new FileReader(settingsFile); //Set settingsReader to read from settingsFile
@@ -60,8 +67,11 @@ public class AnketaDB extends JFrame
         username = settings.getString("username");
         password = settings.getString("password");
         address = settings.getString("address");
+        schema = settings.getString("schema");
 
         databaseConnection = DriverManager.getConnection(("jdbc:mysql://" + address), username, password); //Sets databaseConnection as the connection to the SQL server
+        statement = databaseConnection.createStatement(); //Sets statement to a statement on the connected database
+        statement.executeUpdate("USE " + schema + ";"); //Sets it so that all future queries query the schema specified in settings.json
 
         cards = new CardLayout(); //Set cards to a new CardLayout object
         container = getContentPane(); //Sets the container to the content pane
@@ -121,7 +131,7 @@ public class AnketaDB extends JFrame
         mainResultsLabel.setBounds(300, 280, 200, 20);
         main.add(mainResultsLabel);
 
-        JList<String> mainResultsList = new JList();
+        JList<String> mainResultsList = new JList<String>(mainResultsListElements);
         mainResultsList.setBounds(150, 300, 500, 175);
         main.add(mainResultsList);
 
@@ -161,7 +171,7 @@ public class AnketaDB extends JFrame
         listOfSurveysSearchButton.setBounds(300, 80, 200, 50);
         listOfSurveys.add(listOfSurveysSearchButton);
 
-        JList<String> listOfSurveysResultsList = new JList();
+        JList<String> listOfSurveysResultsList = new JList<String>(listOfSurveysResultsListElements);
         listOfSurveysResultsList.setBounds(150, 160, 500, 300);
         listOfSurveys.add(listOfSurveysResultsList);
 
@@ -257,21 +267,20 @@ public class AnketaDB extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                String query = "SELECT id, surveyid, firstname, lastname FROM responses WHERE (firstname LIKE '%" + mainSearchNameTextField.getText() +
-                               "%'' AND year = " + mainSearchYearTextField.getText() +
-                               "AND surveyid = (SELECT id FROM surveys WHERE name LIKE '%" + mainSearchSurveyTextField.getText() +
-                               "%')) OR (lastname LIKE '%" + mainSearchNameTextField.getText() + "AND year = " + mainSearchYearTextField.getText() +
-                               "AND surveyid = (SELECT id FROM surveys WHERE name LIKE '%" + mainSearchSurveyTextField.getText() + "%'));";
+                //TODO: update this query to return based on search box text
+                String query = "SELECT responses.firstname, responses.lastname, surveys.surveyname, surveys.surveyyear"
+                              +"FROM responses INNER JOIN surveys ON responses.surveyid = surveys.id;";
                 
                 try
                 {
+                    System.out.println(query);
                     results = statement.executeQuery(query); //Executes a query which returns all the rows matching the parameters of the search box
                     String listElement = "";
-                    String[] listElements = new String[0];
 
                     while(results.next())
                     {
-                        listElement = results.getString("firstname") + " " + results.getString("lastname") + " | " + 
+                        listElement = results.getString("firstname") + " " + results.getString("lastname") + " | " + statement.executeQuery("SELECT year FROM surveys WHERE id = " + results.getString("surveyid") + ";").toString() + " | " + statement.executeQuery("SELECT surveyname FROM surveys WHERE id = " + results.getString("surveyid") + ";").toString();
+                        mainResultsListElements = pushElementToStringArray(mainResultsListElements, listElement);
                     }
                 }
                 catch(SQLException exception)
@@ -306,10 +315,10 @@ public class AnketaDB extends JFrame
         });
     }
 
-    //Method which adds an object to an array of the same kind of object
-    public Object[] pushElementToArray(Object[] array, Object element)
+    //Method which adds a String to the end of a String array (for list generation)
+    public String[] pushElementToStringArray(String[] array, String element)
     {
-        Object[] newArray = new Object[array.length + 1];
+        String[] newArray = new String[array.length + 1];
 
         for(int i = 0; i < array.length; i++)
         {

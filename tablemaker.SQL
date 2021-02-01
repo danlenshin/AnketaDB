@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS anketadb;
+USE anketadb;
+
 CREATE TABLE surveys (
     id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     surveyname VARCHAR(500),
