@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
 import java.awt.Container;
 import java.awt.CardLayout;
@@ -271,7 +272,25 @@ public class AnketaDB extends JFrame
 
                 //TODO: update this query to return based on search box text
                 String query = "SELECT responses.firstname, responses.lastname, surveys.surveyname, surveys.surveyyear"
-                              +" FROM responses INNER JOIN surveys ON responses.surveyid = surveys.id;";
+                              +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
+                              +" AND (responses.firstname LIKE '%" + mainSearchNameTextField.getText() + "%'"
+                              +" OR responses.lastname LIKE '%" + mainSearchNameTextField.getText() + "%')"
+                              +" AND surveys.surveyname LIKE '%" + mainSearchSurveyTextField.getText() + "%'";
+                
+                if(isInt(mainSearchYearTextField.getText()))
+                {
+                    query += " AND surveys.surveyyear = " + Integer.parseInt(mainSearchYearTextField.getText()) + ";";
+                }
+                else if(mainSearchYearTextField.getText().isEmpty())
+                {
+                    query += ";";
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + mainSearchYearTextField.getText() + "\" недействительное год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                              
                 
                 try
                 {
@@ -288,6 +307,7 @@ public class AnketaDB extends JFrame
                 }
                 catch(SQLException exception)
                 {
+                    System.out.println(query);
                     System.out.println("mainSearchButton query failed");
                     System.out.println(exception);
                 }
@@ -332,6 +352,20 @@ public class AnketaDB extends JFrame
         newArray[newArray.length - 1] = element;
 
         return newArray;
+    }
+
+    //Method which checks if a string is an integer
+    public Boolean isInt(String string)
+    {
+        try
+        {
+            Integer.parseInt(string);
+            return true;
+        }
+        catch(NumberFormatException exception)
+        {
+            return false;
+        }
     }
 
     public static void main(String[] args) throws IOException, SQLException
