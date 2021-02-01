@@ -270,7 +270,6 @@ public class AnketaDB extends JFrame
             {
                 mainResultsListElements = new String[0]; //Clears mainResultsListElements array
 
-                //TODO: update this query to return based on search box text
                 String query = "SELECT responses.firstname, responses.lastname, surveys.surveyname, surveys.surveyyear"
                               +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
                               +" AND (responses.firstname LIKE '%" + mainSearchNameTextField.getText() + "%'"
@@ -307,16 +306,13 @@ public class AnketaDB extends JFrame
                 }
                 catch(SQLException exception)
                 {
-                    System.out.println(query);
-                    System.out.println("mainSearchButton query failed");
-                    System.out.println(exception);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
         //!TEST CODE
         cards.show(container, "main");
-        setVisible(true);
         setSize(800, 600);
         surveyCreationCreateButton.setBounds(240, getBounds().height - 80, 150, 30);
         surveyCreationCancelButton.setBounds(410, getBounds().height - 80, 150, 30);
@@ -368,10 +364,18 @@ public class AnketaDB extends JFrame
         }
     }
 
+    //Method which checks if a String contains SQL code (in order to prevent the user from performing an SQL injection)
+    public Boolean checkSQLInjection(String string)
+    {
+        //TODO: create this method
+        return false;
+    }
+
     public static void main(String[] args) throws IOException, SQLException
     {
         //!TEST CODE
         JFrame frame = new AnketaDB();
+        frame.setVisible(true);
         //!TEST CODE
     }
 }
