@@ -267,25 +267,29 @@ public class AnketaDB extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
+                mainResultsListElements = new String[0]; //Clears mainResultsListElements array
+
                 //TODO: update this query to return based on search box text
                 String query = "SELECT responses.firstname, responses.lastname, surveys.surveyname, surveys.surveyyear"
-                              +"FROM responses INNER JOIN surveys ON responses.surveyid = surveys.id;";
+                              +" FROM responses INNER JOIN surveys ON responses.surveyid = surveys.id;";
                 
                 try
                 {
-                    System.out.println(query);
                     results = statement.executeQuery(query); //Executes a query which returns all the rows matching the parameters of the search box
                     String listElement = "";
 
                     while(results.next())
                     {
-                        listElement = results.getString("firstname") + " " + results.getString("lastname") + " | " + statement.executeQuery("SELECT year FROM surveys WHERE id = " + results.getString("surveyid") + ";").toString() + " | " + statement.executeQuery("SELECT surveyname FROM surveys WHERE id = " + results.getString("surveyid") + ";").toString();
+                        listElement = results.getString("responses.firstname") + " " + results.getString("responses.lastname") + " | " + results.getString("surveys.surveyyear") + " | " + results.getString("surveys.surveyname");
                         mainResultsListElements = pushElementToStringArray(mainResultsListElements, listElement);
                     }
+
+                    mainResultsList.setListData(mainResultsListElements);
                 }
                 catch(SQLException exception)
                 {
                     System.out.println("mainSearchButton query failed");
+                    System.out.println(exception);
                 }
             }
         });
