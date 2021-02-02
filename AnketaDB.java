@@ -50,7 +50,7 @@ public class AnketaDB extends JFrame
     Container container; //Container object which the card layout will be on
 
     //GUI List Objects
-    String[] mainResultsListElements = new String[0]; //Stores the elements of the response search list on the main screen
+    Response[] mainResultsListElements = new Response[0]; //Stores the elements of the response search list on the main screen
     String[] listOfSurveysResultsListElements = new String[0]; //Stores the elements of the list of surveys list on the list of surveys screen
 
     public AnketaDB() throws IOException, SQLException, JSONException
@@ -132,7 +132,7 @@ public class AnketaDB extends JFrame
         mainResultsLabel.setBounds(300, 280, 200, 20);
         main.add(mainResultsLabel);
 
-        JList<String> mainResultsList = new JList<String>(mainResultsListElements);
+        JList<Response> mainResultsList = new JList<Response>(mainResultsListElements);
         mainResultsList.setBounds(150, 300, 500, 175);
         main.add(mainResultsList);
 
@@ -268,46 +268,77 @@ public class AnketaDB extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                mainResultsListElements = new String[0]; //Clears mainResultsListElements array
+                mainResultsListElements = new Response[0]; //Clears mainResultsListElements array
 
-                String query = "SELECT responses.firstname, responses.lastname, surveys.surveyname, surveys.surveyyear"
+                //SQL Query which searches for responses which match parameters
+                String query = "SELECT responses.id"
                               +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
                               +" AND (responses.firstname LIKE '%" + mainSearchNameTextField.getText() + "%'"
                               +" OR responses.lastname LIKE '%" + mainSearchNameTextField.getText() + "%')"
                               +" AND surveys.surveyname LIKE '%" + mainSearchSurveyTextField.getText() + "%'";
                 
+                //Checks if the year input is a valid int, either finishes query construction or displays error message
                 if(isInt(mainSearchYearTextField.getText()))
                 {
-                    query += " AND surveys.surveyyear = " + Integer.parseInt(mainSearchYearTextField.getText()) + ";";
+                    query += " AND surveys.surveyyear = " + Integer.parseInt(mainSearchYearTextField.getText()) + ";"; //Search for responses equal to year if year is an int
                 }
                 else if(mainSearchYearTextField.getText().isEmpty())
                 {
-                    query += ";";
+                    query += ";"; //Ignores year if year text box is empty
                 }
                 else
                 {
+                    //Displays warning message and does not execute query if year is not empty but invalid
                     JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + mainSearchYearTextField.getText() + "\" недействительное год.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
-                }
-                              
+                }              
                 
                 try
                 {
-                    results = statement.executeQuery(query); //Executes a query which returns all the rows matching the parameters of the search box
-                    String listElement = "";
+                    //TODO: finish this
+                    results = statement.executeQuery(query); //Executes the query
+                    int[] responseids = new int[0]; //Int array containing the id of all the responses which are in the query
 
-                    while(results.next())
+                    while(results.next()) //Pushes ids to responseids
                     {
-                        listElement = results.getString("responses.firstname") + " " + results.getString("responses.lastname") + " | " + results.getString("surveys.surveyyear") + " | " + results.getString("surveys.surveyname");
-                        mainResultsListElements = pushElementToStringArray(mainResultsListElements, listElement);
+                        responseids = pushElementToIntArray(responseids, results.getInt("id"));
                     }
 
-                    mainResultsList.setListData(mainResultsListElements);
+                    for(int id : responseids) //Adds response objects to JList
+                    {
+                        results = statement.executeQuery("SELECT responses.*, surveys.surveyname, surveys.surveyyear FROM responses, surveys WHERE responses.surveyid = surveys.id AND responses.id = " + id);
+
+                        //Creates new response array and new response object
+                        Response[] newMainResultsListElements = new Response[mainResultsListElements.length + 1];
+                        Response newResponse = new Response(results); //TODO: fix NullPointerException here
+
+                        //Adds elements already in main array to new array
+                        for(int i = 0; i < mainResultsListElements.length; i++)
+                        {
+                            newMainResultsListElements[i] = mainResultsListElements[i];
+                        }
+
+                        newMainResultsListElements[newMainResultsListElements.length - 1] = newResponse; //Adds new element to new array
+
+                        mainResultsListElements = newMainResultsListElements; //Sets main array equal to new array
+                    }
+
+                    mainResultsList.setListData(mainResultsListElements); //Resets JList
                 }
                 catch(SQLException exception)
                 {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
                     JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
                 }
+            }
+        });
+
+        mainSelectButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                Response selection = mainResultsList.getSelectedValue();
+                
             }
         });
 
@@ -335,10 +366,10 @@ public class AnketaDB extends JFrame
         });
     }
 
-    //Method which adds a String to the end of a String array (for list generation)
-    public String[] pushElementToStringArray(String[] array, String element)
+    //Method which adds an int to the end of an int array (for list generation)
+    public int[] pushElementToIntArray(int[] array, int element)
     {
-        String[] newArray = new String[array.length + 1];
+        int[] newArray = new int[array.length + 1];
 
         for(int i = 0; i < array.length; i++)
         {
