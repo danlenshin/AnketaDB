@@ -18,10 +18,17 @@ public class Response
     */
     public Response(ResultSet results) throws SQLException
     {
-        System.out.println(results.getString("surveyname"));
-        survey.setName(results.getString("surveyname")); //TODO: Stop NullPointerException here (it can read the data just fine, just has issues putting it in (had the same issue with my ex heyooooo))
-        survey.setYear(results.getInt("surveyyear"));
+        results.next();
 
+        //Constructs survey object
+        this.survey = new Survey(results.getString("surveyname"), results.getInt("surveyyear"));
+
+        //Constructs the responses object
+        responses = new String[0];
+
+        //Adds responses to response array
+        addResponse(results.getString("lastname"));
+        addResponse(results.getString("firstname"));
         for(int i = 3; i < 31; i++)
         {
             if(results.getString("r" + i) == null)
