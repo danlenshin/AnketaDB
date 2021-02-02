@@ -18,23 +18,22 @@ public class Response
     */
     public Response(ResultSet results) throws SQLException
     {
-        while(results.next())
-        {
-            survey.setName(results.getString("surveys.surveyname"));
-            survey.setYear(results.getInt("surveys.surveyyear"));
+        System.out.println(results.getString("surveyname"));
+        survey.setName(results.getString("surveyname")); //TODO: Stop NullPointerException here (it can read the data just fine, just has issues putting it in (had the same issue with my ex heyooooo))
+        survey.setYear(results.getInt("surveyyear"));
 
-            for(int i = 3; i < 31; i++)
+        for(int i = 3; i < 31; i++)
+        {
+            if(results.getString("r" + i) == null)
             {
-                if(results.getString("r" + i) == null)
-                {
-                    break;
-                }
-                else
-                {
-                    responses[i - 3] = results.getString("r" + i);
-                }
+                break;
+            }
+            else
+            {
+                addResponse(results.getString("r" + i));
             }
         }
+        
     }
 
     public Survey getSurvey() //Returns the survey the response is based on
@@ -69,9 +68,12 @@ public class Response
         return query;
     }
 
-    @Override
     public String toString()
     {
-        return responses[0] + " " + responses[1] + " | " + survey.getYear() + " | " + survey.getName();
+        System.out.println(responses[1]);
+        System.out.println(responses[0]);
+        System.out.println(survey.getYear());
+        System.out.println(survey.getName());
+        return responses[1] + " " + responses[0] + " | " + survey.getYear() + " | " + survey.getName();
     }
 }

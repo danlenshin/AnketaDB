@@ -308,9 +308,11 @@ public class AnketaDB extends JFrame
                     {
                         results = statement.executeQuery("SELECT responses.*, surveys.surveyname, surveys.surveyyear FROM responses, surveys WHERE responses.surveyid = surveys.id AND responses.id = " + id);
 
+                        results.next();
+                        
                         //Creates new response array and new response object
                         Response[] newMainResultsListElements = new Response[mainResultsListElements.length + 1];
-                        Response newResponse = new Response(results); //TODO: fix NullPointerException here
+                        Response newResponse = new Response(results);
 
                         //Adds elements already in main array to new array
                         for(int i = 0; i < mainResultsListElements.length; i++)
