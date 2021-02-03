@@ -10,6 +10,13 @@ public class Question
         this.isLong = isLong;
     }
 
+    //Blank constructor
+    public Question()
+    {
+        this.text = null;
+        this.isLong = false;
+    }
+
     //Getter and setter methods
     public String getText()
     {

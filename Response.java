@@ -1,5 +1,6 @@
 import java.sql.ResultSet; //To allow creation of constructor based on ResultSet
 import java.sql.SQLException;
+
 public class Response 
 {
     public Survey survey;
@@ -13,15 +14,12 @@ public class Response
 
     /*
     Creates a response object using a ResultSet object
-    The ResultSet must contain all of the response table columns as well as the surveyname and surveyyear columns INNER JOINed using surveyid
+    The ResultSet must contain all of the response table columns as well as all the survey columns INNER JOINed on responses.surveyid = surveys.id
     results must be a single row (representing a single response)
     */
     public Response(ResultSet results) throws SQLException
     {
         results.next();
-
-        //Constructs survey object
-        this.survey = new Survey(results.getString("surveyname"), results.getInt("surveyyear"));
 
         //Constructs the responses object
         responses = new String[0];
@@ -40,7 +38,9 @@ public class Response
                 addResponse(results.getString("r" + i));
             }
         }
-        
+
+        //TODO: get survey from database and set survey to a new survey object equal to it
+        this.survey = new Survey(results);
     }
 
     public Survey getSurvey() //Returns the survey the response is based on

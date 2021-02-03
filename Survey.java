@@ -1,3 +1,6 @@
+import java.sql.ResultSet; //To allow creation of constructor based on ResultSet
+import java.sql.SQLException;
+
 public class Survey 
 {
     public String name; //name of Survey
@@ -9,7 +12,35 @@ public class Survey
     {
         this.name = name;
         this.year = year;
-        questions = new Question[0];
+        this.questions = new Question[0];
+    }
+
+    /*
+    Creates a survey object using a ResultSet object
+    The ResultSet must contain all of the survey table columns
+    results must be a single row (representing a single survey)
+    */
+    public Survey(ResultSet results) throws SQLException
+    {
+        this.name = results.getString("surveyname");
+        this.year = results.getInt("surveyyear");
+        this.questions = new Question[0];
+
+        Question newQuestion = new Question();
+
+        for(int i = 1; i < 31; i++) //Goes through questions and adds them to the questions array
+        {
+            if(results.getString("q" + i) == null) //Checks if the question is null, breaks if so
+            {
+                break;
+            }
+            else
+            {
+                newQuestion.setText(results.getString("q" + i)); //Sets new question text from results
+                newQuestion.setIsLong(results.getInt("q" + i + "length") == 1 ? true : false); //Sets new question isLong from results
+                this.addQuestion(newQuestion); //Adds the new question to the questions array
+            }
+        }
     }
 
     //Getter and setter methods
@@ -45,12 +76,12 @@ public class Survey
         int newSize = this.questions.length + 1;
         Question[] newQuestions = new Question[newSize];
 
-        for(int i = 0; i < this.questions.length; i++)
+        for(int i = 0; i < this.questions.length; i++) //Adds old questions to newQuestions
         {
             newQuestions[i] = this.questions[i];
         }
 
-        newQuestions[newSize - 1] = this.questions[newSize - 2];
+        newQuestions[newSize - 1] = question; //Adds new question to the end of newQuestions
 
         this.questions = newQuestions;
     }

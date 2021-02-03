@@ -20,6 +20,8 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import java.awt.Container;
 import java.awt.CardLayout;
@@ -270,6 +272,13 @@ public class AnketaDB extends JFrame
         responseViewBackButton.setBounds(520, getBounds().height - 100, 200, 50);
         responseView.add(responseViewBackButton);
 
+        JPanel responseViewResponse = new JPanel();
+
+        JScrollPane responseViewScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        responseViewScrollPane.setBounds(50, 20, 700, 450);
+        responseViewScrollPane.setViewportView(responseViewResponse);
+        responseView.add(responseViewScrollPane);
+
         container.add("responseView", responseView);
         
         /*
@@ -325,7 +334,7 @@ public class AnketaDB extends JFrame
                     for(int id : responseids) //Adds response objects to JList
                     {
                         //Executes query which returns the row in the responses table with id equal to int id
-                        results = statement.executeQuery("SELECT responses.*, surveys.surveyname, surveys.surveyyear FROM responses, surveys WHERE responses.surveyid = surveys.id AND responses.id = " + id);
+                        results = statement.executeQuery("SELECT responses.*, surveys.* FROM responses, surveys WHERE responses.surveyid = surveys.id AND responses.id = " + id);
 
                         //Creates new response array and new response object
                         Response[] newMainResultsListElements = new Response[mainResultsListElements.length + 1];
@@ -356,15 +365,22 @@ public class AnketaDB extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                //TODO: finish this ActionListener
                 Response selection = mainResultsList.getSelectedValue();
 
-                if(selection == null)
+                if(selection == null) //Checks if there is no selected response, displays information message if so
                 {
                     JOptionPane.showMessageDialog(AnketaDB.this, "Что бы выбрать ответ, нажимайте на ответ и потом на кнопка \"Выбрать\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
                 AnketaDB.this.setTitle(selection.toString());
+
+                /*
+                TODO: finish this portion
+                -Get questions and response from database
+                -Display in JPanel responseViewResponse as formatted survey (bold questions, smaller long questions)
+                */
+
+                String[] responseViewResponses = selection.getResponses();
 
                 cards.show(container, "responseView");
             }
