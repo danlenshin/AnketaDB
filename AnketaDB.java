@@ -251,6 +251,26 @@ public class AnketaDB extends JFrame
         surveyCreation.add(surveyCreationAddShortQuestionButton);
 
         container.add("surveyCreation", surveyCreation);
+
+        /*
+        Creating the response view window and adding it to cards
+        */
+        JPanel responseView = new JPanel();
+        responseView.setLayout(null);
+
+        JButton responseViewEditButton = new JButton("Редактировать");
+        responseViewEditButton.setBounds(80, getBounds().height - 100, 200, 50);
+        responseView.add(responseViewEditButton);
+
+        JButton responseViewDeleteButton = new JButton("Удалить");
+        responseViewDeleteButton.setBounds(300, getBounds().height - 100, 200, 50);
+        responseView.add(responseViewDeleteButton);
+
+        JButton responseViewBackButton = new JButton("Назад");
+        responseViewBackButton.setBounds(520, getBounds().height - 100, 200, 50);
+        responseView.add(responseViewBackButton);
+
+        container.add("responseView", responseView);
         
         /*
         Navigational ActionListeners
@@ -260,6 +280,7 @@ public class AnketaDB extends JFrame
         causeToShowCard(mainSurveyCreationButton, "surveyCreation", this, "Создание Анкеты");
         causeToShowCard(listOfSurveysBackButton, "main", this, "AnketaDB by Daniel Lenshin");
         causeToShowCard(surveyCreationCancelButton, "main", this, "AnketaDB by Daniel Lenshin");
+        causeToShowCard(responseViewBackButton, "main", this, "AnketaDB by Daniel Lenshin");
 
         //Adds action listener to main screen search button
         mainSearchButton.addActionListener(new ActionListener()
@@ -337,8 +358,15 @@ public class AnketaDB extends JFrame
             {
                 //TODO: finish this ActionListener
                 Response selection = mainResultsList.getSelectedValue();
-                
-                
+
+                if(selection == null)
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Что бы выбрать ответ, нажимайте на ответ и потом на кнопка \"Выбрать\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+                AnketaDB.this.setTitle(selection.toString());
+
+                cards.show(container, "responseView");
             }
         });
 
