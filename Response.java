@@ -53,7 +53,7 @@ public class Response
         return responses;
     }
 
-    public void addResponse(String response)
+    public void addResponse(String response) //Adds a string to the end of the responses array
     {
         int newSize = this.responses.length + 1;
         String[] newResponses = new String[newSize];
@@ -77,10 +77,6 @@ public class Response
 
     public String toString()
     {
-        System.out.println(responses[1]);
-        System.out.println(responses[0]);
-        System.out.println(survey.getYear());
-        System.out.println(survey.getName());
         return responses[1] + " " + responses[0] + " | " + survey.getYear() + " | " + survey.getName();
     }
 }

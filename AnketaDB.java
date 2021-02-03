@@ -261,9 +261,7 @@ public class AnketaDB extends JFrame
         causeToShowCard(listOfSurveysBackButton, "main", this, "AnketaDB by Daniel Lenshin");
         causeToShowCard(surveyCreationCancelButton, "main", this, "AnketaDB by Daniel Lenshin");
 
-        /*
-        Main Panel ActionListeners
-        */
+        //Adds action listener to main screen search button
         mainSearchButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -273,9 +271,9 @@ public class AnketaDB extends JFrame
                 //SQL Query which searches for responses which match parameters
                 String query = "SELECT responses.id"
                               +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
-                              +" AND (responses.firstname LIKE '%" + mainSearchNameTextField.getText() + "%'"
-                              +" OR responses.lastname LIKE '%" + mainSearchNameTextField.getText() + "%')"
-                              +" AND surveys.surveyname LIKE '%" + mainSearchSurveyTextField.getText() + "%'";
+                              +" AND (responses.firstname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%'"
+                              +" OR responses.lastname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%')"
+                              +" AND surveys.surveyname LIKE '%" + filterString(mainSearchSurveyTextField.getText()) + "%'";
                 
                 //Checks if the year input is a valid int, either finishes query construction or displays error message
                 if(isInt(mainSearchYearTextField.getText()))
@@ -295,7 +293,6 @@ public class AnketaDB extends JFrame
                 
                 try
                 {
-                    //TODO: finish this
                     results = statement.executeQuery(query); //Executes the query
                     int[] responseids = new int[0]; //Int array containing the id of all the responses which are in the query
 
@@ -306,6 +303,7 @@ public class AnketaDB extends JFrame
 
                     for(int id : responseids) //Adds response objects to JList
                     {
+                        //Executes query which returns the row in the responses table with id equal to int id
                         results = statement.executeQuery("SELECT responses.*, surveys.surveyname, surveys.surveyyear FROM responses, surveys WHERE responses.surveyid = surveys.id AND responses.id = " + id);
 
                         //Creates new response array and new response object
@@ -317,7 +315,6 @@ public class AnketaDB extends JFrame
                         {
                             newMainResultsListElements[i] = mainResultsListElements[i];
                         }
-
                         newMainResultsListElements[newMainResultsListElements.length - 1] = newResponse; //Adds new element to new array
 
                         mainResultsListElements = newMainResultsListElements; //Sets main array equal to new array
@@ -333,11 +330,14 @@ public class AnketaDB extends JFrame
             }
         });
 
+        //Adds ActionListener to the main screen select button
         mainSelectButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
+                //TODO: finish this ActionListener
                 Response selection = mainResultsList.getSelectedValue();
+                
                 
             }
         });
@@ -395,11 +395,34 @@ public class AnketaDB extends JFrame
         }
     }
 
-    //Method which checks if a String contains SQL code (in order to prevent the user from performing an SQL injection)
-    public Boolean checkSQLInjection(String string)
+    //Method which checks for SQL escape characters and properly formats them (in order to prevent SQL Injection and accidental syntax errors)
+    public String filterString(String string)
     {
-        //TODO: create this method
-        return false;
+        char[] escapeChars = {'\'', '"'}; //Char array of SQL escape characters
+        String filteredString = ""; //String with escape characters filtered
+        boolean charAdded; //Boolean which checks if the character has been added to the string
+
+        for(int i = 0; i < string.length(); i++)
+        {
+            charAdded = false; //Sets charAdded to false before adding new char
+
+            for(char character : escapeChars)
+            {
+                if(string.charAt(i) == character) //Adds properly formatted char to filtered string if it is an escape character
+                {
+                    filteredString += "\\" + string.charAt(i);
+                    charAdded = true;
+                    break;
+                }
+            }
+
+            if(!charAdded) //Adds the raw character if it has not yet been added
+            {
+                filteredString += string.charAt(i);
+            }
+        }
+
+        return filteredString;
     }
 
     public static void main(String[] args) throws IOException, SQLException
