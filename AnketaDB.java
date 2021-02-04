@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.BoxLayout;
 import java.awt.Container;
 import java.awt.CardLayout;
 import java.awt.event.ActionListener;
@@ -260,6 +261,8 @@ public class AnketaDB extends JFrame
         JPanel responseView = new JPanel();
         responseView.setLayout(null);
 
+        Container responseViewResponsesContainer = new Container();
+
         JButton responseViewEditButton = new JButton("Редактировать");
         responseViewEditButton.setBounds(80, getBounds().height - 100, 200, 50);
         responseView.add(responseViewEditButton);
@@ -272,11 +275,15 @@ public class AnketaDB extends JFrame
         responseViewBackButton.setBounds(520, getBounds().height - 100, 200, 50);
         responseView.add(responseViewBackButton);
 
-        JPanel responseViewResponse = new JPanel();
+        JPanel responseViewResponsesPanel = new JPanel();
+        responseViewResponsesContainer.add(responseViewResponsesPanel);
+
+        BoxLayout responseViewResponsesContainerLayout = new BoxLayout(responseViewResponsesContainer, BoxLayout.PAGE_AXIS);
+        responseViewResponsesContainer.setLayout(responseViewResponsesContainerLayout);
 
         JScrollPane responseViewScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         responseViewScrollPane.setBounds(50, 20, 700, 450);
-        responseViewScrollPane.setViewportView(responseViewResponse);
+        responseViewScrollPane.setViewportView(responseViewResponsesPanel);
         responseView.add(responseViewScrollPane);
 
         container.add("responseView", responseView);
@@ -317,7 +324,7 @@ public class AnketaDB extends JFrame
                 else
                 {
                     //Displays warning message and does not execute query if year is not empty but invalid
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + mainSearchYearTextField.getText() + "\" недействительное год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + mainSearchYearTextField.getText() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }              
                 
@@ -329,6 +336,11 @@ public class AnketaDB extends JFrame
                     while(results.next()) //Pushes ids to responseids
                     {
                         responseids = pushElementToIntArray(responseids, results.getInt("id"));
+                    }
+
+                    if(responseids.length == 0) //Checks if responseids is empty, shows "no responses found" message
+                    {
+                        JOptionPane.showMessageDialog(AnketaDB.this, "Не мог найти ответы с данным вводам.", "Внимание", JOptionPane.INFORMATION_MESSAGE);
                     }
 
                     for(int id : responseids) //Adds response objects to JList
@@ -372,15 +384,26 @@ public class AnketaDB extends JFrame
                     JOptionPane.showMessageDialog(AnketaDB.this, "Что бы выбрать ответ, нажимайте на ответ и потом на кнопка \"Выбрать\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
-                AnketaDB.this.setTitle(selection.toString());
 
-                /*
-                TODO: finish this portion
-                -Get questions and response from database
-                -Display in JPanel responseViewResponse as formatted survey (bold questions, smaller long questions)
-                */
+                AnketaDB.this.setTitle(selection.toString()); //Sets window title to response toString
 
-                String[] responseViewResponses = selection.getResponses();
+                Question[] responseViewQuestions = selection.getSurvey().getQuestions(); //Sets responseViewQuestions to the selection questions
+                String[] responseViewResponses = selection.getResponses(); //Sets responseViewResponses to the selection responses
+                String questionText; //Stores a question as a string
+                String responseText; //Stores a response to a question as a string
+
+                for(int i = 0; i < responseViewQuestions.length; i++)
+                {
+                    //TODO: properly display text on responseViewResponsesPanel
+                    //It retrieves the data just fine, it's just that only the first question is displayed for some reason
+                    System.out.println(responseViewQuestions[i].getText());
+                    System.out.println(responseViewResponses[i]);
+                    questionText = "<html><body><p style = 'width: 650px;'><b>" + responseViewQuestions[i].getText() + "</b></p></body></html>";
+                    responseViewResponsesPanel.add(new JLabel(questionText));
+
+                    responseText = "<html><body><p style = 'width: 650px;'>" + responseViewResponses[i] + "</p></body></html>";
+                    responseViewResponsesPanel.add(new JLabel(responseText));
+                }
 
                 cards.show(container, "responseView");
             }

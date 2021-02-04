@@ -39,7 +39,6 @@ public class Response
             }
         }
 
-        //TODO: get survey from database and set survey to a new survey object equal to it
         this.survey = new Survey(results);
     }
 

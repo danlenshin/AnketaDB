@@ -26,10 +26,12 @@ public class Survey
         this.year = results.getInt("surveyyear");
         this.questions = new Question[0];
 
-        Question newQuestion = new Question();
+        Question newQuestion;
 
         for(int i = 1; i < 31; i++) //Goes through questions and adds them to the questions array
         {
+            newQuestion = new Question();
+            
             if(results.getString("q" + i) == null) //Checks if the question is null, breaks if so
             {
                 break;
