@@ -278,7 +278,7 @@ public class AnketaDB extends JFrame
         JPanel responseViewResponsesPanel = new JPanel();
         responseViewResponsesContainer.add(responseViewResponsesPanel);
 
-        BoxLayout responseViewResponsesContainerLayout = new BoxLayout(responseViewResponsesContainer, BoxLayout.PAGE_AXIS);
+        BoxLayout responseViewResponsesContainerLayout = new BoxLayout(responseViewResponsesPanel, BoxLayout.PAGE_AXIS);
         responseViewResponsesContainer.setLayout(responseViewResponsesContainerLayout);
 
         JScrollPane responseViewScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -389,20 +389,24 @@ public class AnketaDB extends JFrame
 
                 Question[] responseViewQuestions = selection.getSurvey().getQuestions(); //Sets responseViewQuestions to the selection questions
                 String[] responseViewResponses = selection.getResponses(); //Sets responseViewResponses to the selection responses
+                JLabel[] addedLabels = new JLabel[responseViewQuestions.length * 2];
+                int addedLabelsPointer = 0; //References index in addedLabels to add to in loop
                 String questionText; //Stores a question as a string
                 String responseText; //Stores a response to a question as a string
 
-                for(int i = 0; i < responseViewQuestions.length; i++)
+                for(int i = 0; i < responseViewQuestions.length; i++) //Adds JLabels to addedLabels
                 {
                     //TODO: properly display text on responseViewResponsesPanel
                     //It retrieves the data just fine, it's just that only the first question is displayed for some reason
-                    System.out.println(responseViewQuestions[i].getText());
-                    System.out.println(responseViewResponses[i]);
-                    questionText = "<html><body><p style = 'width: 650px;'><b>" + responseViewQuestions[i].getText() + "</b></p></body></html>";
-                    responseViewResponsesPanel.add(new JLabel(questionText));
+                    questionText = "<html><body><p style='width: 650px;'><b>" + responseViewQuestions[i].getText() + "</b></p></body></html>";
+                    addedLabels[addedLabelsPointer] = new JLabel(questionText);
+                    responseViewResponsesPanel.add(addedLabels[addedLabelsPointer]);
+                    addedLabelsPointer++;
 
-                    responseText = "<html><body><p style = 'width: 650px;'>" + responseViewResponses[i] + "</p></body></html>";
-                    responseViewResponsesPanel.add(new JLabel(responseText));
+                    responseText = "<html><body><p style='width: 650px;'>" + responseViewResponses[i] + "</p></body></html>";
+                    addedLabels[addedLabelsPointer] = new JLabel(responseText);
+                    responseViewResponsesPanel.add(addedLabels[addedLabelsPointer]);
+                    addedLabelsPointer++;
                 }
 
                 cards.show(container, "responseView");
