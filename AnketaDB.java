@@ -23,11 +23,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import java.awt.Container;
 import java.awt.CardLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Dimension;
 
 public class AnketaDB extends JFrame
 {
@@ -275,11 +277,9 @@ public class AnketaDB extends JFrame
         responseViewBackButton.setBounds(520, getBounds().height - 100, 200, 50);
         responseView.add(responseViewBackButton);
 
-        JPanel responseViewResponsesPanel = new JPanel();
+        JPanel responseViewResponsesPanel = new JPanel(); //This panel is viewed in the JScrollPane
+        responseViewResponsesPanel.setLayout(new BoxLayout(responseViewResponsesPanel, BoxLayout.Y_AXIS));
         responseViewResponsesContainer.add(responseViewResponsesPanel);
-
-        BoxLayout responseViewResponsesContainerLayout = new BoxLayout(responseViewResponsesPanel, BoxLayout.PAGE_AXIS);
-        responseViewResponsesContainer.setLayout(responseViewResponsesContainerLayout);
 
         JScrollPane responseViewScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         responseViewScrollPane.setBounds(50, 20, 700, 450);
@@ -389,24 +389,28 @@ public class AnketaDB extends JFrame
 
                 Question[] responseViewQuestions = selection.getSurvey().getQuestions(); //Sets responseViewQuestions to the selection questions
                 String[] responseViewResponses = selection.getResponses(); //Sets responseViewResponses to the selection responses
-                JLabel[] addedLabels = new JLabel[responseViewQuestions.length * 2];
-                int addedLabelsPointer = 0; //References index in addedLabels to add to in loop
-                String questionText; //Stores a question as a string
-                String responseText; //Stores a response to a question as a string
+                JLabel[] responseViewLabels = new JLabel[0]; //Stores the labels to be displayed on the response view window
 
-                for(int i = 0; i < responseViewQuestions.length; i++) //Adds JLabels to addedLabels
+                //TODO: properly display text on responseViewResponsesPanel
+                for(int i = 0; i < responseViewQuestions.length; i++) //Pushes questions and responses to responseViewLabels
                 {
-                    //TODO: properly display text on responseViewResponsesPanel
-                    //It retrieves the data just fine, it's just that only the first question is displayed for some reason
-                    questionText = "<html><body><p style='width: 650px;'><b>" + responseViewQuestions[i].getText() + "</b></p></body></html>";
-                    addedLabels[addedLabelsPointer] = new JLabel(questionText);
-                    responseViewResponsesPanel.add(addedLabels[addedLabelsPointer]);
-                    addedLabelsPointer++;
+                    JLabel[] newResponseViewLabels = new JLabel[responseViewLabels.length + 2];
 
-                    responseText = "<html><body><p style='width: 650px;'>" + responseViewResponses[i] + "</p></body></html>";
-                    addedLabels[addedLabelsPointer] = new JLabel(responseText);
-                    responseViewResponsesPanel.add(addedLabels[addedLabelsPointer]);
-                    addedLabelsPointer++;
+                    for(int j = 0; j < responseViewLabels.length; j++)
+                    {
+                        newResponseViewLabels[j] = responseViewLabels[j];
+                    }
+
+                    newResponseViewLabels[newResponseViewLabels.length - 2] = new JLabel(responseViewQuestions[i].getText());
+                    newResponseViewLabels[newResponseViewLabels.length - 1] = new JLabel(responseViewResponses[i]);
+
+                    responseViewLabels = newResponseViewLabels;
+                }
+
+                for(int i = 0; i < responseViewLabels.length; i++) //Adds labels to response view
+                {
+                    responseViewResponsesPanel.add(responseViewLabels[i]);
+                    responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
                 }
 
                 cards.show(container, "responseView");
