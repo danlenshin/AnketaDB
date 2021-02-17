@@ -17,7 +17,7 @@ public class Response
     The ResultSet must contain all of the response table columns as well as all the survey columns INNER JOINed on responses.surveyid = surveys.id
     results must be a single row (representing a single response)
     */
-    public Response(ResultSet results) throws SQLException
+    public Response(ResultSet results) throws SQLException //TODO: fix constructor (throws after end of result set exception)
     {
         results.next(); //Moves cursor into results so as not to throw a before start of result set exception
 

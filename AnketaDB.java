@@ -352,7 +352,7 @@ public class AnketaDB extends JFrame
 
                         //Creates new response array and new response object
                         Response[] newMainResultsListElements = new Response[mainResultsListElements.length + 1];
-                        Response newResponse = new Response(results);
+                        Response newResponse = new Response(results); //TODO: stop this line from throwing "after end of Result Set" SQLException
 
                         //Adds elements already in main array to new array
                         for(int i = 0; i < mainResultsListElements.length; i++)
@@ -487,6 +487,49 @@ public class AnketaDB extends JFrame
                     listOfSurveysResultsList.setListData(listOfSurveysResultsListElements); //Resets JList
                 }
                 catch (SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        });
+
+        //Adds ActionListener to the list of surveys delete button
+        listOfSurveysDeleteButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                Survey selection = listOfSurveysResultsList.getSelectedValue();
+
+                if(selection == null) //Checks if there is no selected survey, displays information message if so
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Что бы удалить анкету, нажимайте на анкета и потом на кнопка \"Удалить\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
+                //Asks user if they want to delete the survey and all responses
+                Object[] options = {"Да", "Нет"}; //Change dialog buttons to display in Russian
+                int deleteSurvey = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить анкета \"" + selection.getName() + "\" и все ответы к нему? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+
+                if(deleteSurvey == JOptionPane.NO_OPTION) //Returns if user presses no
+                {
+                    return;
+                }
+
+                //Attempts to delete the survey and all responses to it
+                try
+                {
+                    //Gets the id of the survey to be deleted
+                    results = statement.executeQuery("SELECT surveys.id FROM surveys WHERE surveys.surveyname = \"" + selection.getName() + "\" AND surveys.surveyyear = " + selection.getYear() + ";");
+                    results.next();
+                    int deletedid = results.getInt("id");
+
+                    //Deletes the survey and all responses with the surveyid of that survey
+                    statement.executeUpdate("DELETE FROM surveys WHERE id = " + deletedid + ";");
+                    statement.executeUpdate("DELETE FROM responses WHERE surveyid = " + deletedid + ";");
+                }
+                catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
                     JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
