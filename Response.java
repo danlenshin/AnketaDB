@@ -19,7 +19,7 @@ public class Response
     */
     public Response(ResultSet results) throws SQLException
     {
-        results.next();
+        results.next(); //Moves cursor into results so as not to throw a before start of result set exception
 
         //Constructs the responses object
         responses = new String[0];

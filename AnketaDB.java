@@ -49,6 +49,7 @@ public class AnketaDB extends JFrame
     Connection databaseConnection; //Connection object which stores the connection to the SQL server
     Statement statement; //Statement object which stores statements to the SQL server
     ResultSet results; //ResultSet object which stores the results of SQL queries
+    String query; //String which stores any queries used
 
     //GUI Layout Objects
     CardLayout cards; //CardLayout object for creating a card layout
@@ -56,7 +57,7 @@ public class AnketaDB extends JFrame
 
     //GUI List Objects
     Response[] mainResultsListElements = new Response[0]; //Stores the elements of the response search list on the main screen
-    String[] listOfSurveysResultsListElements = new String[0]; //Stores the elements of the list of surveys list on the list of surveys screen
+    Survey[] listOfSurveysResultsListElements = new Survey[0]; //Stores the elements of the list of surveys list on the list of surveys screen
 
     public AnketaDB() throws IOException, SQLException, JSONException
     {
@@ -177,7 +178,7 @@ public class AnketaDB extends JFrame
         listOfSurveysSearchButton.setBounds(300, 80, 200, 50);
         listOfSurveys.add(listOfSurveysSearchButton);
 
-        JList<String> listOfSurveysResultsList = new JList<String>(listOfSurveysResultsListElements);
+        JList<Survey> listOfSurveysResultsList = new JList<Survey>(listOfSurveysResultsListElements);
         listOfSurveysResultsList.setBounds(150, 160, 500, 300);
         listOfSurveys.add(listOfSurveysResultsList);
 
@@ -306,11 +307,11 @@ public class AnketaDB extends JFrame
                 mainResultsListElements = new Response[0]; //Clears mainResultsListElements array
 
                 //SQL Query which searches for responses which match parameters
-                String query = "SELECT responses.id"
-                              +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
-                              +" AND (responses.firstname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%'"
-                              +" OR responses.lastname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%')"
-                              +" AND surveys.surveyname LIKE '%" + filterString(mainSearchSurveyTextField.getText()) + "%'";
+                query = "SELECT responses.id"
+                        +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
+                        +" AND (responses.firstname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%'"
+                        +" OR responses.lastname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%')"
+                        +" AND surveys.surveyname LIKE '%" + filterString(mainSearchSurveyTextField.getText()) + "%'";
                 
                 //Checks if the year input is a valid int, either finishes query construction or displays error message
                 if(isInt(mainSearchYearTextField.getText()))
@@ -328,6 +329,7 @@ public class AnketaDB extends JFrame
                     return;
                 }              
                 
+                //Attempts to execute the query and return the results into the JList
                 try
                 {
                     results = statement.executeQuery(query); //Executes the query
@@ -368,6 +370,7 @@ public class AnketaDB extends JFrame
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
                     JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
             }
         });
@@ -391,7 +394,6 @@ public class AnketaDB extends JFrame
                 String[] responseViewResponses = selection.getResponses(); //Sets responseViewResponses to the selection responses
                 JLabel[] responseViewLabels = new JLabel[0]; //Stores the labels to be displayed on the response view window
 
-                //TODO: properly display text on responseViewResponsesPanel
                 for(int i = 0; i < responseViewQuestions.length; i++) //Pushes questions and responses to responseViewLabels
                 {
                     JLabel[] newResponseViewLabels = new JLabel[responseViewLabels.length + 2];
@@ -401,19 +403,95 @@ public class AnketaDB extends JFrame
                         newResponseViewLabels[j] = responseViewLabels[j];
                     }
 
-                    newResponseViewLabels[newResponseViewLabels.length - 2] = new JLabel(responseViewQuestions[i].getText());
-                    newResponseViewLabels[newResponseViewLabels.length - 1] = new JLabel(responseViewResponses[i]);
+                    newResponseViewLabels[newResponseViewLabels.length - 2] = new JLabel("<html><body><p style='width: 500px;'><u>" + responseViewQuestions[i].getText() + "</u></p></body></html>");
+                    newResponseViewLabels[newResponseViewLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'>" + responseViewResponses[i] + "</p></body></html>");
 
                     responseViewLabels = newResponseViewLabels;
                 }
 
-                for(int i = 0; i < responseViewLabels.length; i++) //Adds labels to response view
+                responseViewResponsesPanel.removeAll(); //Cleans responseViewResponsesPanel of any previous labels
+
+                for(int i = 0; i < responseViewLabels.length; i+=2) //Adds labels to response view
                 {
                     responseViewResponsesPanel.add(responseViewLabels[i]);
-                    responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+                    responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+                    responseViewResponsesPanel.add(responseViewLabels[i+1]);
+                    responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 15)));
                 }
 
                 cards.show(container, "responseView");
+            }
+        });
+
+        //Adds ActionListener to the list of surveys search button
+        listOfSurveysSearchButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                listOfSurveysResultsListElements = new Survey[0]; //Clears list of surveys list elements
+
+                //SQL query which searches for surveys which match parameters
+                query = "SELECT surveys.id FROM surveys WHERE surveys.surveyname LIKE '%" + filterString(listOfSurveysSearchNameTextField.getText()) + "%'";
+
+                //Checks if the year input is a valid int, either finishes query construction or displays error message
+                if(isInt(listOfSurveysSearchYearTextField.getText()))
+                {
+                    query += " AND surveys.surveyyear = " + Integer.parseInt(listOfSurveysSearchYearTextField.getText()) + ";"; //Search for surveys with the year if year is an int
+                }
+                else if(listOfSurveysSearchYearTextField.getText().isEmpty())
+                {
+                    query += ";"; //Ignores year if year text box is empty
+                }
+                else
+                {
+                    //Displays warning message and does not execute query if year is not empty but invalid
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + listOfSurveysSearchYearTextField.getText() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                //Attempts to execute the query and return the results into the JList
+                try
+                {
+                    results = statement.executeQuery(query);
+                    int[] surveyids = new int[0];
+
+                    while(results.next()) //Pushes ids to surveyids
+                    {
+                        surveyids = pushElementToIntArray(surveyids, results.getInt("id"));
+                    }
+
+                    if(surveyids.length == 0) //Checks if surveyids is empty, shows "no surveys found" message
+                    {
+                        JOptionPane.showMessageDialog(AnketaDB.this, "Не мог найти анкеты с данным вводам.", "Внимание", JOptionPane.INFORMATION_MESSAGE);
+                    }
+
+                    for(int id : surveyids) //Adds survey objects to JList
+                    {
+                        //Executes query which returns the row in the surveys table with id equal to int id
+                        results = statement.executeQuery("SELECT surveys.* FROM surveys WHERE id = " + id);
+
+                        //Creates new survey array and survey object
+                        Survey[] newListOfSurveysResultsListElements = new Survey[listOfSurveysResultsListElements.length + 1];
+                        Survey newSurvey = new Survey(results);
+
+                        //Adds elements already in main array to new array
+                        for(int i = 0; i < listOfSurveysResultsListElements.length; i++)
+                        {
+                            newListOfSurveysResultsListElements[i] = listOfSurveysResultsListElements[i];
+                        }
+                        newListOfSurveysResultsListElements[newListOfSurveysResultsListElements.length - 1] = newSurvey; //Adds new element to new array
+
+                        listOfSurveysResultsListElements = newListOfSurveysResultsListElements; //Sets main array equal to new array
+                    }
+
+                    listOfSurveysResultsList.setListData(listOfSurveysResultsListElements); //Resets JList
+                }
+                catch (SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
         });
 

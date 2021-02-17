@@ -22,6 +22,8 @@ public class Survey
     */
     public Survey(ResultSet results) throws SQLException
     {
+        results.next(); //Moves cursor into results so as not to throw a before start of result set exception
+
         this.name = results.getString("surveyname");
         this.year = results.getInt("surveyyear");
         this.questions = new Question[0];
@@ -86,6 +88,12 @@ public class Survey
         newQuestions[newSize - 1] = question; //Adds new question to the end of newQuestions
 
         this.questions = newQuestions;
+    }
+
+    //toString method
+    public String toString()
+    {
+        return name + " | " + year;
     }
 
     //Creates an INSERT INTO statement which inserts the survey into the surveys table
