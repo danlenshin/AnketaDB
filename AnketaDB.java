@@ -14,7 +14,9 @@ import java.sql.SQLException;
 
 //GUI imports
 import javax.swing.JPanel;
+import javax.swing.text.JTextComponent;
 import javax.swing.JTextField;
+import javax.swing.JTextArea;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JButton;
@@ -27,6 +29,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import java.awt.Container;
 import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Dimension;
@@ -446,7 +449,7 @@ public class AnketaDB extends JFrame
                 {
                     responseViewResponsesPanel.add(responseViewLabels[i]);
                     responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 2)));
-                    responseViewResponsesPanel.add(responseViewLabels[i+1]);
+                    responseViewResponsesPanel.add(responseViewLabels[i + 1]);
                     responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 15)));
                 }
 
@@ -466,39 +469,54 @@ public class AnketaDB extends JFrame
                 AnketaDB.this.setTitle("Редактирование: " + selectedResponse.toString()); //Sets the window title to "Editing: [RESPONSE]"
 
                 JLabel[] responseEditLabels = new JLabel[0];
-                JTextField[] responseEditTextFields = new JTextField[0];
+                JTextComponent[] responseEditTextComponents = new JTextComponent[0];
                 Question[] responseEditQuestions = selectedResponse.getSurvey().getQuestions();
 
                 //Pushes labels to responseEditLabels and textfields to responseEditTextFields
                 for(int i = 0; i < responseEditQuestions.length; i++)
                 {
                     JLabel[] newResponseEditLabels = new JLabel[responseEditLabels.length + 1];
-                    JTextField[] newResponseEditTextFields = new JTextField[responseEditTextFields.length + 1];
+                    JTextComponent[] newResponseEditTextComponents = new JTextComponent[responseEditTextComponents.length + 1];
 
-                    for(int j = 0; j < responseEditLabels.length; j++)
+                    for(int j = 0; j < responseEditTextComponents.length; j++)
                     {
                         newResponseEditLabels[j] = responseEditLabels[j];
-                        newResponseEditTextFields[j] = responseEditTextFields[j];
+                        newResponseEditTextComponents[j] = responseEditTextComponents[j];
                     }
 
+                    //Adds label to newResponseEditComponents
                     newResponseEditLabels[newResponseEditLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'><u>" + responseEditQuestions[i].getText() + "</u></p></body></html>");
                     
-                    //Creates new textField and adds it to newResponseEditTextFields
-                    JTextField addedTextField = new JTextField();
-                    addedTextField.setText(responseEditQuestions[i].getText());
-                    newResponseEditTextFields[newResponseEditTextFields.length - 1] = addedTextField;
+                    //Adds either a JTextField or JTextArea to newResponseEditTextComponents depending on question length
+                    if(responseEditQuestions[i].getIsLong())
+                    {
+                        JTextArea addedTextComponent = new JTextArea();
+                        addedTextComponent.setAlignmentX(Component.LEFT_ALIGNMENT);
+                        addedTextComponent.setLineWrap(true);
+                        addedTextComponent.setWrapStyleWord(true);
+                        addedTextComponent.setMaximumSize(new Dimension(650, 175));
+                        addedTextComponent.setText(selectedResponse.getResponses()[i]);
+                        newResponseEditTextComponents[newResponseEditTextComponents.length - 1] = addedTextComponent;
+                    }
+                    else
+                    {
+                        JTextField addedTextComponent = new JTextField();
+                        addedTextComponent.setMaximumSize(new Dimension(1000, 25));
+                        addedTextComponent.setText(selectedResponse.getResponses()[i]);
+                        newResponseEditTextComponents[newResponseEditTextComponents.length - 1] = addedTextComponent;
+                    }
 
                     responseEditLabels = newResponseEditLabels;
-                    responseEditTextFields = newResponseEditTextFields;
+                    responseEditTextComponents = newResponseEditTextComponents;
                 }
 
                 responseEditResponsesPanel.removeAll(); //Clears responseEditResponsesPanel
 
-                for(int i = 0; i < responseEditLabels.length; i++)
+                for(int i = 0; i < responseEditTextComponents.length; i++)
                 {
                     responseEditResponsesPanel.add(responseEditLabels[i]);
                     responseEditResponsesPanel.add(Box.createRigidArea(new Dimension(0, 2)));
-                    responseEditResponsesPanel.add(responseEditTextFields[i]);
+                    responseEditResponsesPanel.add(responseEditTextComponents[i]);
                     responseEditResponsesPanel.add(Box.createRigidArea(new Dimension(0, 15)));
                 }
 
