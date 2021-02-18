@@ -99,11 +99,11 @@ public class AnketaDB extends JFrame
         main.setLayout(null); //Sets the layout of the main panel as null (since no layout manager is being used)
 
         JButton mainSurveyCreationButton = new JButton("Создать Анкету");
-        mainSurveyCreationButton.setBounds(100, 20, 250, 50);
+        mainSurveyCreationButton.setBounds(120, 20, 250, 50);
         main.add(mainSurveyCreationButton);
 
         JButton mainListOfSurveysButton = new JButton("Список Анкет");
-        mainListOfSurveysButton.setBounds(400, 20, 250, 50);
+        mainListOfSurveysButton.setBounds(430, 20, 250, 50);
         main.add(mainListOfSurveysButton);
 
         JLabel mainSearchLabel = new JLabel("Поиск", SwingConstants.RIGHT);
@@ -292,7 +292,34 @@ public class AnketaDB extends JFrame
         responseView.add(responseViewScrollPane);
 
         container.add("responseView", responseView);
-        
+
+        /*
+        Creating the response edit window and adding it to cards
+        */
+        JPanel responseEdit = new JPanel();
+        responseEdit.setLayout(null);
+
+        Container responseEditResponsesContainer = new Container();
+
+        JButton responseEditSaveButton = new JButton("Сохранить");
+        responseEditSaveButton.setBounds(200, 500, 150, 50);
+        responseEdit.add(responseEditSaveButton);
+
+        JButton responseEditCancelButton = new JButton("Отменить");
+        responseEditCancelButton.setBounds(450, 500, 150, 50);
+        responseEdit.add(responseEditCancelButton);
+
+        JPanel responseEditResponsesPanel = new JPanel();
+        responseEditResponsesPanel.setLayout(new BoxLayout(responseEditResponsesPanel, BoxLayout.Y_AXIS));
+        responseEditResponsesContainer.add(responseEditResponsesPanel);
+
+        JScrollPane responseEditScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        responseEditScrollPane.setBounds(50, 20, 700, 450);
+        responseEditScrollPane.setViewportView(responseEditResponsesPanel);
+        responseEdit.add(responseEditScrollPane);
+
+        container.add("responseEdit", responseEdit);
+
         /*
         Navigational ActionListeners
         These ActionListeners are added to buttons which switch to a different window without manipulating any data
@@ -427,7 +454,55 @@ public class AnketaDB extends JFrame
                 mainResultsListElements = new Response[0];
                 mainResultsList.setListData(mainResultsListElements);
 
-                cards.show(container, "responseView"); //Shows response view with the labels added
+                cards.show(container, "responseView"); //Shows response view window with the labels added
+            }
+        });
+
+        //Adds ActionListener to the response view edit button
+        responseViewEditButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                AnketaDB.this.setTitle("Редактирование: " + selectedResponse.toString()); //Sets the window title to "Editing: [RESPONSE]"
+
+                JLabel[] responseEditLabels = new JLabel[0];
+                JTextField[] responseEditTextFields = new JTextField[0];
+                Question[] responseEditQuestions = selectedResponse.getSurvey().getQuestions();
+
+                //Pushes labels to responseEditLabels and textfields to responseEditTextFields
+                for(int i = 0; i < responseEditQuestions.length; i++)
+                {
+                    JLabel[] newResponseEditLabels = new JLabel[responseEditLabels.length + 1];
+                    JTextField[] newResponseEditTextFields = new JTextField[responseEditTextFields.length + 1];
+
+                    for(int j = 0; j < responseEditLabels.length; j++)
+                    {
+                        newResponseEditLabels[j] = responseEditLabels[j];
+                        newResponseEditTextFields[j] = responseEditTextFields[j];
+                    }
+
+                    newResponseEditLabels[newResponseEditLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'><u>" + responseEditQuestions[i].getText() + "</u></p></body></html>");
+                    
+                    //Creates new textField and adds it to newResponseEditTextFields
+                    JTextField addedTextField = new JTextField();
+                    addedTextField.setText(responseEditQuestions[i].getText());
+                    newResponseEditTextFields[newResponseEditTextFields.length - 1] = addedTextField;
+
+                    responseEditLabels = newResponseEditLabels;
+                    responseEditTextFields = newResponseEditTextFields;
+                }
+
+                responseEditResponsesPanel.removeAll(); //Clears responseEditResponsesPanel
+
+                for(int i = 0; i < responseEditLabels.length; i++)
+                {
+                    responseEditResponsesPanel.add(responseEditLabels[i]);
+                    responseEditResponsesPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+                    responseEditResponsesPanel.add(responseEditTextFields[i]);
+                    responseEditResponsesPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+                }
+
+                cards.show(container, "responseEdit"); //Shows response edit window with elements added
             }
         });
 
@@ -440,8 +515,8 @@ public class AnketaDB extends JFrame
                 Object[] options = {"Да", "Нет"}; //Change dialog buttons to display in Russian
                 int deleteResponse = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить ответ \"" + selectedResponse.toString() + "\"? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 
-                //Stops execution if user selects "no"
-                if(deleteResponse == JOptionPane.NO_OPTION)
+                //Stops execution if user selects "no" or the X button
+                if(deleteResponse == JOptionPane.NO_OPTION || deleteResponse == JOptionPane.CLOSED_OPTION)
                 {
                     return;
                 }
@@ -465,6 +540,17 @@ public class AnketaDB extends JFrame
                     JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+            }
+        });
+
+        //Adds ActionListener to the response edit cancel button
+        responseEditCancelButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //Show the response view panel with the appropriate title
+                AnketaDB.this.setTitle(selectedResponse.toString());
+                cards.show(container, "responseView");
             }
         });
 
@@ -557,7 +643,7 @@ public class AnketaDB extends JFrame
                 Object[] options = {"Да", "Нет"}; //Change dialog buttons to display in Russian
                 int deleteSurvey = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить анкета \"" + selectedSurvey.getName() + "\" и все ответы к нему? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 
-                if(deleteSurvey == JOptionPane.NO_OPTION) //Returns if user presses no
+                if(deleteSurvey == JOptionPane.NO_OPTION || deleteSurvey == JOptionPane.CLOSED_OPTION) //Returns if user presses "no" or the X button
                 {
                     return;
                 }
@@ -585,14 +671,13 @@ public class AnketaDB extends JFrame
             }
         });
 
-        //!TEST CODE
+        //Sets the main card as the card to be displayed and formats the window to the correct resolution
         cards.show(container, "main");
         setSize(800, 600);
         surveyCreationCreateButton.setBounds(240, getBounds().height - 80, 150, 30);
         surveyCreationCancelButton.setBounds(410, getBounds().height - 80, 150, 30);
         surveyCreationAddLongQuestionButton.setBounds(240, getBounds().height - 120, 320, 30);
         surveyCreationAddShortQuestionButton.setBounds(240, getBounds().height - 160, 320, 30);
-        //!TEST CODE
     }
 
     //Method which adds an ActionListener to a button which causes it to show a certain card and change the name of the frame
