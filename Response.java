@@ -1,4 +1,6 @@
 import java.sql.ResultSet; //To allow creation of constructor based on ResultSet
+import java.sql.Statement; //To allow execution of queries and updates
+import java.sql.Connection; //To allow class to connect to an SQL database
 import java.sql.SQLException;
 
 public class Response 
@@ -17,9 +19,9 @@ public class Response
     The ResultSet must contain all of the response table columns as well as all the survey columns INNER JOINed on responses.surveyid = surveys.id
     results must be a single row (representing a single response)
     */
-    public Response(ResultSet results) throws SQLException //TODO: fix constructor (throws after end of result set exception)
+    public Response(ResultSet results) throws SQLException
     {
-        results.next(); //Moves cursor into results so as not to throw a before start of result set exception
+        this.survey = new Survey(results);
 
         //Constructs the responses object
         responses = new String[0];
@@ -38,8 +40,6 @@ public class Response
                 addResponse(results.getString("r" + i));
             }
         }
-
-        this.survey = new Survey(results);
     }
 
     public Survey getSurvey() //Returns the survey the response is based on
@@ -67,15 +67,55 @@ public class Response
         this.responses = newResponses;
     }
 
-    public String toInsertStatement()
+    //returns the ID of the response in the responses table as an integer
+    public int getSQLId(Connection connection) throws SQLException
     {
-        String query = "";
-        
-        return query;
+        Statement statement = connection.createStatement();
+        String query = "SELECT responses.id FROM responses"
+                     + " WHERE (responses.lastname = \"" + filterString(this.responses[0])
+                     + "\" AND responses.firstname = \"" + filterString(this.responses[1])
+                     + "\") AND responses.surveyid = " + survey.getSQLId(connection) + ";";
+
+        //!TEST
+        System.out.println(query);
+
+        ResultSet results = statement.executeQuery(query);
+        results.next();
+        return results.getInt("id");
     }
 
     public String toString()
     {
         return responses[1] + " " + responses[0] + " | " + survey.getYear() + " | " + survey.getName();
+    }
+
+    //Method which checks for SQL escape characters and properly formats them (in order to prevent SQL Injection and accidental syntax errors)
+    private String filterString(String string)
+    {
+        char[] escapeChars = {'\'', '"'}; //Char array of SQL escape characters
+        String filteredString = ""; //String with escape characters filtered
+        boolean charAdded; //Boolean which checks if the character has been added to the string
+
+        for(int i = 0; i < string.length(); i++)
+        {
+            charAdded = false; //Sets charAdded to false before adding new char
+
+            for(char character : escapeChars)
+            {
+                if(string.charAt(i) == character) //Adds properly formatted char to filtered string if it is an escape character
+                {
+                    filteredString += "\\" + string.charAt(i);
+                    charAdded = true;
+                    break;
+                }
+            }
+
+            if(!charAdded) //Adds the raw character if it has not yet been added
+            {
+                filteredString += string.charAt(i);
+            }
+        }
+
+        return filteredString;
     }
 }

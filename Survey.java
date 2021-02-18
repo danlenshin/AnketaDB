@@ -1,4 +1,6 @@
 import java.sql.ResultSet; //To allow creation of constructor based on ResultSet
+import java.sql.Statement; //To allow for the execution of queries and updates
+import java.sql.Connection; //To allow class to connect to an SQL database
 import java.sql.SQLException;
 
 public class Survey 
@@ -96,27 +98,42 @@ public class Survey
         return name + " | " + year;
     }
 
-    //Creates an INSERT INTO statement which inserts the survey into the surveys table
-    public String toInsertStatement()
+    //Returns the id of the survey in the surveys table
+    public int getSQLId(Connection connection) throws SQLException
     {
-        String statement = "INSERT INTO surveys ("; //Creates statement string
+        Statement statement = connection.createStatement();
+        ResultSet results = statement.executeQuery("SELECT surveys.id FROM surveys WHERE surveys.surveyname = \"" + filterString(this.name) + "\" AND surveys.surveyyear = " + this.year + ";");
+        results.next();
+        return results.getInt("id");
+    }
 
-        //Adds columns to statement string
-        statement += "surveyname, surveyyear, ";
-        for(int i = 0; i < questions.length; i++)
+    //Method which checks for SQL escape characters and properly formats them (in order to prevent SQL Injection and accidental syntax errors)
+    private String filterString(String string)
+    {
+        char[] escapeChars = {'\'', '"'}; //Char array of SQL escape characters
+        String filteredString = ""; //String with escape characters filtered
+        boolean charAdded; //Boolean which checks if the character has been added to the string
+
+        for(int i = 0; i < string.length(); i++)
         {
-            statement += "q" + (i+1) + ", q" + (i+1) + "length, ";
-        }
-        statement += ") VALUES (";
+            charAdded = false; //Sets charAdded to false before adding new char
 
-        //Adds values to statement string
-        statement += "\'" + name + "\', " + year + ", ";
-        for(int i = 0; i < questions.length-1; i++)
-        {
-            statement += "\'" + questions[i].getText() + "\', " + (questions[i].getIsLong() ? 1 : 0) + ", ";
-        }
-        statement += "\'" + questions[questions.length - 1].getText() + "\', " + (questions[questions.length - 1].getIsLong() ? 1 : 0) + ");";
+            for(char character : escapeChars)
+            {
+                if(string.charAt(i) == character) //Adds properly formatted char to filtered string if it is an escape character
+                {
+                    filteredString += "\\" + string.charAt(i);
+                    charAdded = true;
+                    break;
+                }
+            }
 
-        return statement;
+            if(!charAdded) //Adds the raw character if it has not yet been added
+            {
+                filteredString += string.charAt(i);
+            }
+        }
+
+        return filteredString;
     }
 }

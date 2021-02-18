@@ -59,6 +59,10 @@ public class AnketaDB extends JFrame
     Response[] mainResultsListElements = new Response[0]; //Stores the elements of the response search list on the main screen
     Survey[] listOfSurveysResultsListElements = new Survey[0]; //Stores the elements of the list of surveys list on the list of surveys screen
 
+    //Selected objects
+    Survey selectedSurvey; //Stores any one response that the program is dealing with
+    Response selectedResponse; //Stores any one survey that the program is dealing with
+
     public AnketaDB() throws IOException, SQLException, JSONException
     {
         settingsFile = new File("settings.json"); //Sets settingsFile as settings.json
@@ -291,7 +295,7 @@ public class AnketaDB extends JFrame
         
         /*
         Navigational ActionListeners
-        These ActionListeners are added to buttons which move between panels
+        These ActionListeners are added to buttons which switch to a different window without manipulating any data
         */
         causeToShowCard(mainListOfSurveysButton, "listOfSurveys", this, "Список Анкет");
         causeToShowCard(mainSurveyCreationButton, "surveyCreation", this, "Создание Анкеты");
@@ -352,7 +356,7 @@ public class AnketaDB extends JFrame
 
                         //Creates new response array and new response object
                         Response[] newMainResultsListElements = new Response[mainResultsListElements.length + 1];
-                        Response newResponse = new Response(results); //TODO: stop this line from throwing "after end of Result Set" SQLException
+                        Response newResponse = new Response(results);
 
                         //Adds elements already in main array to new array
                         for(int i = 0; i < mainResultsListElements.length; i++)
@@ -380,18 +384,18 @@ public class AnketaDB extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                Response selection = mainResultsList.getSelectedValue();
+                selectedResponse = mainResultsList.getSelectedValue();
 
-                if(selection == null) //Checks if there is no selected response, displays information message if so
+                if(selectedResponse == null) //Checks if there is no selected response, displays information message if so
                 {
                     JOptionPane.showMessageDialog(AnketaDB.this, "Что бы выбрать ответ, нажимайте на ответ и потом на кнопка \"Выбрать\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
-                AnketaDB.this.setTitle(selection.toString()); //Sets window title to response toString
+                AnketaDB.this.setTitle(selectedResponse.toString()); //Sets window title to response toString
 
-                Question[] responseViewQuestions = selection.getSurvey().getQuestions(); //Sets responseViewQuestions to the selection questions
-                String[] responseViewResponses = selection.getResponses(); //Sets responseViewResponses to the selection responses
+                Question[] responseViewQuestions = selectedResponse.getSurvey().getQuestions(); //Sets responseViewQuestions to the selection questions
+                String[] responseViewResponses = selectedResponse.getResponses(); //Sets responseViewResponses to the selection responses
                 JLabel[] responseViewLabels = new JLabel[0]; //Stores the labels to be displayed on the response view window
 
                 for(int i = 0; i < responseViewQuestions.length; i++) //Pushes questions and responses to responseViewLabels
@@ -419,7 +423,48 @@ public class AnketaDB extends JFrame
                     responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 15)));
                 }
 
-                cards.show(container, "responseView");
+                //Cleans main screen search list
+                mainResultsListElements = new Response[0];
+                mainResultsList.setListData(mainResultsListElements);
+
+                cards.show(container, "responseView"); //Shows response view with the labels added
+            }
+        });
+
+        //Adds ActionListener to the response view delete button
+        responseViewDeleteButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //Asks user if they want to delete the response
+                Object[] options = {"Да", "Нет"}; //Change dialog buttons to display in Russian
+                int deleteResponse = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить ответ \"" + selectedResponse.toString() + "\"? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+
+                //Stops execution if user selects "no"
+                if(deleteResponse == JOptionPane.NO_OPTION)
+                {
+                    return;
+                }
+
+                //Attempts to delete the selected response from the responses table
+                try
+                {
+                    //Gets the id of the response to be deleted
+                    int deletedid = selectedResponse.getSQLId(databaseConnection);
+
+                    //Deletes the response from the responses table
+                    statement.executeUpdate("DELETE FROM responses WHERE responses.id = " + deletedid + ";");
+
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ответ \"" + selectedResponse.toString() + "\" удалён.", "Удаление завершено", JOptionPane.INFORMATION_MESSAGE);
+
+                    cards.show(container, "main"); //Shows main window after deletion
+                }
+                catch(SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
         });
 
@@ -500,9 +545,9 @@ public class AnketaDB extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                Survey selection = listOfSurveysResultsList.getSelectedValue();
+                selectedSurvey = listOfSurveysResultsList.getSelectedValue();
 
-                if(selection == null) //Checks if there is no selected survey, displays information message if so
+                if(selectedSurvey == null) //Checks if there is no selected survey, displays information message if so
                 {
                     JOptionPane.showMessageDialog(AnketaDB.this, "Что бы удалить анкету, нажимайте на анкета и потом на кнопка \"Удалить\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
                     return;
@@ -510,7 +555,7 @@ public class AnketaDB extends JFrame
 
                 //Asks user if they want to delete the survey and all responses
                 Object[] options = {"Да", "Нет"}; //Change dialog buttons to display in Russian
-                int deleteSurvey = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить анкета \"" + selection.getName() + "\" и все ответы к нему? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+                int deleteSurvey = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить анкета \"" + selectedSurvey.getName() + "\" и все ответы к нему? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 
                 if(deleteSurvey == JOptionPane.NO_OPTION) //Returns if user presses no
                 {
@@ -521,13 +566,15 @@ public class AnketaDB extends JFrame
                 try
                 {
                     //Gets the id of the survey to be deleted
-                    results = statement.executeQuery("SELECT surveys.id FROM surveys WHERE surveys.surveyname = \"" + selection.getName() + "\" AND surveys.surveyyear = " + selection.getYear() + ";");
-                    results.next();
-                    int deletedid = results.getInt("id");
+                    int deletedid = selectedSurvey.getSQLId(databaseConnection);
 
                     //Deletes the survey and all responses with the surveyid of that survey
                     statement.executeUpdate("DELETE FROM surveys WHERE id = " + deletedid + ";");
                     statement.executeUpdate("DELETE FROM responses WHERE surveyid = " + deletedid + ";");
+
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Анкета " + selectedSurvey.getName() + " и все ответы удалён.", "Удаление завершено", JOptionPane.INFORMATION_MESSAGE);
+
+                    cards.show(container, "main"); //Shows main window after deletion
                 }
                 catch(SQLException exception)
                 {
