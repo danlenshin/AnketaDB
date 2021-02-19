@@ -843,6 +843,12 @@ public class AnketaDB extends JFrame
             {
                 selectedSurvey = listOfSurveysResultsList.getSelectedValue();
 
+                if(selectedSurvey == null) //Checks if there is no selected survey, displays information message if so
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Что бы редактировать анкету, нажимайте на анкета и потом на кнопка \"Редактировать\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
                 AnketaDB.this.setTitle("Редакторование: " + selectedSurvey.toString());
 
                 //Sets the survey name and survey year to the selected survey values in the text fields
@@ -955,11 +961,17 @@ public class AnketaDB extends JFrame
         });
 
         //Adds ActionListener to the list of surveys fill in button
-        listOfSurveysFillInButton.addActionListener(new ActionListener() //TODO: finish fill in button ActionListener
+        listOfSurveysFillInButton.addActionListener(new ActionListener() //TODO: implement null selection protection
         {
             public void actionPerformed(ActionEvent e)
             {
                 Survey selectedSurvey = listOfSurveysResultsList.getSelectedValue();
+
+                if(selectedSurvey == null) //Checks if there is no selected survey, displays information message if so
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Что бы выполнить анкету, нажимайте на анкета и потом на кнопка \"Выполнить\".", "Выбор Нет", JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
 
                 AnketaDB.this.setTitle("Выполнение: " + selectedSurvey.toString()); //Sets the window title to "Editing: [SURVEY]
 
@@ -1107,6 +1119,96 @@ public class AnketaDB extends JFrame
 
                     //Displays success message and changes to list of surveys window
                     JOptionPane.showMessageDialog(AnketaDB.this, "Анкета \"" + selectedSurvey.toString() + "\" успешно редактированно.", "Успех", JOptionPane.INFORMATION_MESSAGE);
+                    AnketaDB.this.setTitle("Список Анкет");
+                    cards.show(container, "listOfSurveys");
+                }
+                catch(SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        });
+
+        //Adds ActionListener to the survey answer save button
+        surveyAnswerSaveButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                selectedSurvey = listOfSurveysResultsList.getSelectedValue();
+
+                Component[] surveyAnswerQuestionsPanelComponents = surveyAnswerQuestionsPanel.getComponents(); //Gets all the components in the survey answer questions panel
+
+                //Filters components array into new array with only the JTextComponents
+                JTextComponent[] surveyAnswerQuestionsPanelTextComponents = new JTextComponent[0];
+                for(int i = 0; i < surveyAnswerQuestionsPanelComponents.length; i++)
+                {
+                    if(surveyAnswerQuestionsPanelComponents[i] instanceof JTextComponent) //Pushes element to text components array if it is a text component
+                    {
+                        JTextComponent[] newsurveyAnswerQuestionsPanelTextComponents = new JTextComponent[surveyAnswerQuestionsPanelTextComponents.length + 1];
+
+                        for(int j = 0; j < surveyAnswerQuestionsPanelTextComponents.length; j++)
+                        {
+                            newsurveyAnswerQuestionsPanelTextComponents[j] = surveyAnswerQuestionsPanelTextComponents[j];
+                        }
+                        newsurveyAnswerQuestionsPanelTextComponents[newsurveyAnswerQuestionsPanelTextComponents.length - 1] = (JTextComponent)surveyAnswerQuestionsPanelComponents[i];
+
+                        surveyAnswerQuestionsPanelTextComponents = newsurveyAnswerQuestionsPanelTextComponents;
+                    }
+                }
+
+                //Checks if a valid first and last name has been inputted, aborts if not
+                if(surveyAnswerQuestionsPanelTextComponents[0].getText().trim().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для фамилия пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                else if(surveyAnswerQuestionsPanelTextComponents[1].getText().trim().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для имя пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                String[] surveyResponses = new String[surveyAnswerQuestionsPanelTextComponents.length]; //Array which stores the responses to the survey being filled in
+                int selectedSurveyId = -1; //Integer which stores the id of the survey being responded to in the database
+
+                try
+                {
+                    selectedSurveyId = selectedSurvey.getSQLId(databaseConnection);
+                }
+                catch(SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                for(int i = 0; i < surveyResponses.length; i++) //Pushes responses to responses array
+                {
+                    surveyResponses[i] = surveyAnswerQuestionsPanelTextComponents[i].getText().trim();
+                }
+
+                //Constructs update which inserts the response into the database
+                String update = "INSERT INTO responses (surveyid, lastname, firstname, ";
+                for(int i = 3; i < surveyResponses.length; i++)
+                {
+                    update += "r" + i + ", ";
+                }
+                update += "r" + surveyResponses.length + ") VALUES (" + selectedSurveyId + ", ";
+                for(int i = 0; i < surveyResponses.length - 1; i++)
+                {
+                    update += "\"" + filterString(surveyResponses[i].trim()) + "\", ";
+                }
+                update += "\"" + filterString(surveyResponses[surveyResponses.length - 1].trim()) + "\");";
+
+                //Attempts to add the response to the database
+                try
+                {
+                    statement.executeUpdate(update);
+
+                    //Shows success message and returns to list of surveys window
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ответ успешно добавленно.", "Успех", JOptionPane.INFORMATION_MESSAGE);
                     AnketaDB.this.setTitle("Список Анкет");
                     cards.show(container, "listOfSurveys");
                 }
