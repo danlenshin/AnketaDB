@@ -616,6 +616,18 @@ public class AnketaDB extends JFrame
                     }
                 }
 
+                //Checks if a valid first and last name has been inputted, aborts if not
+                if(responseEditResponsesPanelTextComponents[0].getText().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для фамилия пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                else if(responseEditResponsesPanelTextComponents[1].getText().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для имя пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 String[] newResponses = selectedResponse.getResponses(); //Array which will store the new responses to the survey
                 int selectedResponseId = -1; //Stores the id of the response in the database
 
@@ -633,18 +645,6 @@ public class AnketaDB extends JFrame
                 for(int i = 0; i < newResponses.length; i++) //Pushes the responses in the text components to newResponses
                 {
                     newResponses[i] = responseEditResponsesPanelTextComponents[i].getText();
-                }
-
-                //Checks if the new responses have valid last and first names (not empty), aborts if not
-                if(newResponses[0].isEmpty())
-                {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для фамилия пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                else if(newResponses[1].isEmpty())
-                {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для имя пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
-                    return;
                 }
 
                 //Generates SQL update which edits the response in the database
