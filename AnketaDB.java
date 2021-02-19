@@ -1,3 +1,9 @@
+/*
+AnketaDB
+Russian Language Survey Database using MySQL
+By Daniel Lenshin
+*/
+
 //Settings.json imports
 import java.io.File;
 import java.io.FileReader;
@@ -953,7 +959,61 @@ public class AnketaDB extends JFrame
         {
             public void actionPerformed(ActionEvent e)
             {
+                Survey selectedSurvey = listOfSurveysResultsList.getSelectedValue();
 
+                AnketaDB.this.setTitle("Выполнение: " + selectedSurvey.toString()); //Sets the window title to "Editing: [SURVEY]
+
+                JLabel[] surveyAnswerLabels = new JLabel[0];
+                JTextComponent[] surveyAnswerTextComponents = new JTextComponent[0];
+                Question[] surveyAnswerQuestions = selectedSurvey.getQuestions();
+
+                //Pushes labels to surveyAnswerLabels and text components to surveyAnswerTextComponents
+                for(int i = 0; i < surveyAnswerQuestions.length; i++)
+                {
+                    JLabel[] newsurveyAnswerLabels = new JLabel[surveyAnswerLabels.length + 1];
+                    JTextComponent[] newsurveyAnswerTextComponents = new JTextComponent[surveyAnswerTextComponents.length + 1];
+
+                    for(int j = 0; j < surveyAnswerTextComponents.length; j++)
+                    {
+                        newsurveyAnswerLabels[j] = surveyAnswerLabels[j];
+                        newsurveyAnswerTextComponents[j] = surveyAnswerTextComponents[j];
+                    }
+
+                    //Adds label to newsurveyAnswerComponents
+                    newsurveyAnswerLabels[newsurveyAnswerLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'><u>" + surveyAnswerQuestions[i].getText().trim() + "</u></p></body></html>");
+                    
+                    //Adds either a JTextField or JTextArea to newsurveyAnswerTextComponents depending on question length
+                    if(surveyAnswerQuestions[i].getIsLong())
+                    {
+                        JTextArea addedTextComponent = new JTextArea();
+                        addedTextComponent.setAlignmentX(Component.LEFT_ALIGNMENT);
+                        addedTextComponent.setLineWrap(true);
+                        addedTextComponent.setWrapStyleWord(true);
+                        addedTextComponent.setMaximumSize(new Dimension(650, 175));
+                        newsurveyAnswerTextComponents[newsurveyAnswerTextComponents.length - 1] = addedTextComponent;
+                    }
+                    else
+                    {
+                        JTextField addedTextComponent = new JTextField();
+                        addedTextComponent.setMaximumSize(new Dimension(1000, 25));
+                        newsurveyAnswerTextComponents[newsurveyAnswerTextComponents.length - 1] = addedTextComponent;
+                    }
+
+                    surveyAnswerLabels = newsurveyAnswerLabels;
+                    surveyAnswerTextComponents = newsurveyAnswerTextComponents;
+                }
+
+                surveyAnswerQuestionsPanel.removeAll(); //Clears surveyAnswerQuestionsPanel of any previous components
+
+                for(int i = 0; i < surveyAnswerTextComponents.length; i++) //Adds components to surveyAnswerQuestionsPanel
+                {
+                    surveyAnswerQuestionsPanel.add(surveyAnswerLabels[i]);
+                    surveyAnswerQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+                    surveyAnswerQuestionsPanel.add(surveyAnswerTextComponents[i]);
+                    surveyAnswerQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+                }
+
+                cards.show(container, "surveyAnswer");
             }
         });
 
