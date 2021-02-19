@@ -52,6 +52,11 @@ public class Response
         return responses;
     }
 
+    public void setResponses(String[] responses)
+    {
+        this.responses = responses;
+    }
+
     public void addResponse(String response) //Adds a string to the end of the responses array
     {
         int newSize = this.responses.length + 1;
@@ -75,9 +80,6 @@ public class Response
                      + " WHERE (responses.lastname = \"" + filterString(this.responses[0])
                      + "\" AND responses.firstname = \"" + filterString(this.responses[1])
                      + "\") AND responses.surveyid = " + survey.getSQLId(connection) + ";";
-
-        //!TEST
-        System.out.println(query);
 
         ResultSet results = statement.executeQuery(query);
         results.next();

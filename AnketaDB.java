@@ -52,7 +52,6 @@ public class AnketaDB extends JFrame
     Connection databaseConnection; //Connection object which stores the connection to the SQL server
     Statement statement; //Statement object which stores statements to the SQL server
     ResultSet results; //ResultSet object which stores the results of SQL queries
-    String query; //String which stores any queries used
 
     //GUI Layout Objects
     CardLayout cards; //CardLayout object for creating a card layout
@@ -341,7 +340,7 @@ public class AnketaDB extends JFrame
                 mainResultsListElements = new Response[0]; //Clears mainResultsListElements array
 
                 //SQL Query which searches for responses which match parameters
-                query = "SELECT responses.id"
+                String query = "SELECT responses.id"
                         +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
                         +" AND (responses.firstname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%'"
                         +" OR responses.lastname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%')"
@@ -510,9 +509,9 @@ public class AnketaDB extends JFrame
                     responseEditTextComponents = newResponseEditTextComponents;
                 }
 
-                responseEditResponsesPanel.removeAll(); //Clears responseEditResponsesPanel
+                responseEditResponsesPanel.removeAll(); //Clears responseEditResponsesPanel of any previous components
 
-                for(int i = 0; i < responseEditTextComponents.length; i++)
+                for(int i = 0; i < responseEditTextComponents.length; i++) //Adds components to responseEditResponsesPanel
                 {
                     responseEditResponsesPanel.add(responseEditLabels[i]);
                     responseEditResponsesPanel.add(Box.createRigidArea(new Dimension(0, 2)));
@@ -561,6 +560,108 @@ public class AnketaDB extends JFrame
             }
         });
 
+        //Adds ActionListener to the response edit save button
+        responseEditSaveButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                Component[] responseEditResponsesPanelComponents = responseEditResponsesPanel.getComponents(); //Gets all the components in the response edit responses panel
+
+                //Filters components array into new array with only the JTextComponents
+                JTextComponent[] responseEditResponsesPanelTextComponents = new JTextComponent[0];
+                for(int i = 0; i < responseEditResponsesPanelComponents.length; i++)
+                {
+                    if(responseEditResponsesPanelComponents[i] instanceof JTextComponent) //Pushes element to text components array if it is a text component
+                    {
+                        JTextComponent[] newResponseEditResponsesPanelTextComponents = new JTextComponent[responseEditResponsesPanelTextComponents.length + 1];
+
+                        for(int j = 0; j < responseEditResponsesPanelTextComponents.length; j++)
+                        {
+                            newResponseEditResponsesPanelTextComponents[j] = responseEditResponsesPanelTextComponents[j];
+                        }
+                        newResponseEditResponsesPanelTextComponents[newResponseEditResponsesPanelTextComponents.length - 1] = (JTextComponent)responseEditResponsesPanelComponents[i];
+
+                        responseEditResponsesPanelTextComponents = newResponseEditResponsesPanelTextComponents;
+                    }
+                }
+
+                String[] newResponses = selectedResponse.getResponses(); //Array which will store the new responses to the survey
+                int selectedResponseId = -1; //Stores the id of the response in the database
+
+                try
+                {
+                    selectedResponseId = selectedResponse.getSQLId(databaseConnection); //Stores the id of the selected response
+                }
+                catch(SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                for(int i = 0; i < newResponses.length; i++) //Pushes the responses in the text components to newResponses
+                {
+                    newResponses[i] = responseEditResponsesPanelTextComponents[i].getText();
+                }
+
+                //Generates SQL update which edits the response in the database
+                String update = "UPDATE responses SET lastname = \"" + filterString(newResponses[0]) + "\", firstname = \"" + filterString(newResponses[1]) + "\", ";
+                for(int i = 2; i < newResponses.length - 1; i++)
+                {
+                    update += "r" + (i + 1) + " = \"" + filterString(newResponses[i]) + "\", ";
+                }
+                update += "r" + newResponses.length + " = \"" + filterString(newResponses[newResponses.length - 1]) + "\" WHERE id = " + selectedResponseId + ";";
+
+                //Attempts to execute the update
+                try
+                {
+                    statement.executeUpdate(update);
+
+                    selectedResponse.setResponses(newResponses); //Sets the responses of the selected response equal to newResponses (only upon successful update in the database)
+
+                    AnketaDB.this.setTitle(selectedResponse.toString()); //Sets window title to response toString
+
+                    Question[] responseViewQuestions = selectedResponse.getSurvey().getQuestions(); //Sets responseViewQuestions to the selection questions
+                    String[] responseViewResponses = selectedResponse.getResponses(); //Sets responseViewResponses to the selection responses
+                    JLabel[] responseViewLabels = new JLabel[0]; //Stores the labels to be displayed on the response view window
+
+                    for(int i = 0; i < responseViewQuestions.length; i++) //Pushes questions and responses to responseViewLabels
+                    {
+                        JLabel[] newResponseViewLabels = new JLabel[responseViewLabels.length + 2];
+
+                        for(int j = 0; j < responseViewLabels.length; j++)
+                        {
+                            newResponseViewLabels[j] = responseViewLabels[j];
+                        }
+
+                        newResponseViewLabels[newResponseViewLabels.length - 2] = new JLabel("<html><body><p style='width: 500px;'><u>" + responseViewQuestions[i].getText() + "</u></p></body></html>");
+                        newResponseViewLabels[newResponseViewLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'>" + responseViewResponses[i] + "</p></body></html>");
+
+                        responseViewLabels = newResponseViewLabels;
+                    }
+
+                    responseViewResponsesPanel.removeAll(); //Cleans responseViewResponsesPanel of any previous labels
+
+                    for(int i = 0; i < responseViewLabels.length; i+=2) //Adds labels to response view
+                    {
+                        responseViewResponsesPanel.add(responseViewLabels[i]);
+                        responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+                        responseViewResponsesPanel.add(responseViewLabels[i + 1]);
+                        responseViewResponsesPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+                    }
+
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ответ " + selectedResponse.toString() + " успешно редактированно.", "Успех", JOptionPane.INFORMATION_MESSAGE);
+                    cards.show(container, "responseView");
+                }
+                catch(SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        });
+
         //Adds ActionListener to the response edit cancel button
         responseEditCancelButton.addActionListener(new ActionListener()
         {
@@ -580,7 +681,7 @@ public class AnketaDB extends JFrame
                 listOfSurveysResultsListElements = new Survey[0]; //Clears list of surveys list elements
 
                 //SQL query which searches for surveys which match parameters
-                query = "SELECT surveys.id FROM surveys WHERE surveys.surveyname LIKE '%" + filterString(listOfSurveysSearchNameTextField.getText()) + "%'";
+                String query = "SELECT surveys.id FROM surveys WHERE surveys.surveyname LIKE '%" + filterString(listOfSurveysSearchNameTextField.getText()) + "%'";
 
                 //Checks if the year input is a valid int, either finishes query construction or displays error message
                 if(isInt(listOfSurveysSearchYearTextField.getText()))
