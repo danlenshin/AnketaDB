@@ -371,23 +371,23 @@ public class AnketaDB extends JFrame
                 //SQL Query which searches for responses which match parameters
                 String query = "SELECT responses.id"
                         +" FROM responses, surveys WHERE responses.surveyid = surveys.id"
-                        +" AND (responses.firstname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%'"
-                        +" OR responses.lastname LIKE '%" + filterString(mainSearchNameTextField.getText()) + "%')"
-                        +" AND surveys.surveyname LIKE '%" + filterString(mainSearchSurveyTextField.getText()) + "%'";
+                        +" AND (responses.firstname LIKE '%" + filterString(mainSearchNameTextField.getText().trim()) + "%'"
+                        +" OR responses.lastname LIKE '%" + filterString(mainSearchNameTextField.getText().trim()) + "%')"
+                        +" AND surveys.surveyname LIKE '%" + filterString(mainSearchSurveyTextField.getText().trim()) + "%'";
                 
                 //Checks if the year input is a valid int, either finishes query construction or displays error message
-                if(isInt(mainSearchYearTextField.getText()))
+                if(isInt(mainSearchYearTextField.getText().trim()))
                 {
-                    query += " AND surveys.surveyyear = " + Integer.parseInt(mainSearchYearTextField.getText()) + ";"; //Search for responses equal to year if year is an int
+                    query += " AND surveys.surveyyear = " + Integer.parseInt(mainSearchYearTextField.getText().trim()) + ";"; //Search for responses equal to year if year is an int
                 }
-                else if(mainSearchYearTextField.getText().isEmpty())
+                else if(mainSearchYearTextField.getText().trim().isEmpty())
                 {
                     query += ";"; //Ignores year if year text box is empty
                 }
                 else
                 {
                     //Displays warning message and does not execute query if year is not empty but invalid
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + mainSearchYearTextField.getText() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + mainSearchYearTextField.getText().trim() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }              
                 
@@ -513,7 +513,7 @@ public class AnketaDB extends JFrame
                     }
 
                     //Adds label to newResponseEditComponents
-                    newResponseEditLabels[newResponseEditLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'><u>" + responseEditQuestions[i].getText() + "</u></p></body></html>");
+                    newResponseEditLabels[newResponseEditLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'><u>" + responseEditQuestions[i].getText().trim() + "</u></p></body></html>");
                     
                     //Adds either a JTextField or JTextArea to newResponseEditTextComponents depending on question length
                     if(responseEditQuestions[i].getIsLong())
@@ -596,8 +596,6 @@ public class AnketaDB extends JFrame
             {
                 Component[] responseEditResponsesPanelComponents = responseEditResponsesPanel.getComponents(); //Gets all the components in the response edit responses panel
 
-                //TODO: add check that a last and first name have been edited
-
                 //Filters components array into new array with only the JTextComponents
                 JTextComponent[] responseEditResponsesPanelTextComponents = new JTextComponent[0];
                 for(int i = 0; i < responseEditResponsesPanelComponents.length; i++)
@@ -617,12 +615,12 @@ public class AnketaDB extends JFrame
                 }
 
                 //Checks if a valid first and last name has been inputted, aborts if not
-                if(responseEditResponsesPanelTextComponents[0].getText().isEmpty())
+                if(responseEditResponsesPanelTextComponents[0].getText().trim().isEmpty())
                 {
                     JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для фамилия пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
-                else if(responseEditResponsesPanelTextComponents[1].getText().isEmpty())
+                else if(responseEditResponsesPanelTextComponents[1].getText().trim().isEmpty())
                 {
                     JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для имя пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -644,7 +642,7 @@ public class AnketaDB extends JFrame
 
                 for(int i = 0; i < newResponses.length; i++) //Pushes the responses in the text components to newResponses
                 {
-                    newResponses[i] = responseEditResponsesPanelTextComponents[i].getText();
+                    newResponses[i] = responseEditResponsesPanelTextComponents[i].getText().trim();
                 }
 
                 //Generates SQL update which edits the response in the database
@@ -678,7 +676,7 @@ public class AnketaDB extends JFrame
                         }
 
                         newResponseViewLabels[newResponseViewLabels.length - 2] = new JLabel("<html><body><p style='width: 500px;'><u>" + responseViewQuestions[i].getText() + "</u></p></body></html>");
-                        newResponseViewLabels[newResponseViewLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'>" + responseViewResponses[i] + "</p></body></html>");
+                        newResponseViewLabels[newResponseViewLabels.length - 1] = new JLabel("<html><body><p style='width: 500px;'>" + responseViewResponses[i].trim() + "</p></body></html>");
 
                         responseViewLabels = newResponseViewLabels;
                     }
@@ -724,21 +722,21 @@ public class AnketaDB extends JFrame
                 listOfSurveysResultsListElements = new Survey[0]; //Clears list of surveys list elements
 
                 //SQL query which searches for surveys which match parameters
-                String query = "SELECT surveys.id FROM surveys WHERE surveys.surveyname LIKE '%" + filterString(listOfSurveysSearchNameTextField.getText()) + "%'";
+                String query = "SELECT surveys.id FROM surveys WHERE surveys.surveyname LIKE '%" + filterString(listOfSurveysSearchNameTextField.getText().trim()) + "%'";
 
                 //Checks if the year input is a valid int, either finishes query construction or displays error message
-                if(isInt(listOfSurveysSearchYearTextField.getText()))
+                if(isInt(listOfSurveysSearchYearTextField.getText().trim()))
                 {
-                    query += " AND surveys.surveyyear = " + Integer.parseInt(listOfSurveysSearchYearTextField.getText()) + ";"; //Search for surveys with the year if year is an int
+                    query += " AND surveys.surveyyear = " + Integer.parseInt(listOfSurveysSearchYearTextField.getText().trim()) + ";"; //Search for surveys with the year if year is an int
                 }
-                else if(listOfSurveysSearchYearTextField.getText().isEmpty())
+                else if(listOfSurveysSearchYearTextField.getText().trim().isEmpty())
                 {
                     query += ";"; //Ignores year if year text box is empty
                 }
                 else
                 {
                     //Displays warning message and does not execute query if year is not empty but invalid
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + listOfSurveysSearchYearTextField.getText() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + listOfSurveysSearchYearTextField.getText().trim() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -819,7 +817,7 @@ public class AnketaDB extends JFrame
                     addedTextField.setMaximumSize(new Dimension(800, 25));
                     newSurveyEditTextFields[newSurveyEditTextFields.length - 1] = addedTextField;
 
-                    //Adds a blank, uneditable TextField representing the answer space
+                    //Adds a blank, disabled TextField representing the answer space
                     addedTextField = new JTextField();
                     addedTextField.setEnabled(false);
                     addedTextField.setBackground(new Color(185, 185, 185));
@@ -848,6 +846,10 @@ public class AnketaDB extends JFrame
                     surveyEditQuestionsPanel.add(surveyEditResponseTextFields[i]);
                     surveyEditQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 15)));
                 }
+
+                //Disables editing on first two text fields (last and first name questions)
+                surveyEditTextFields[0].setEditable(false);
+                surveyEditTextFields[1].setEditable(false);
 
                 cards.show(container, "surveyEdit"); //Shows survey edit window with elements added
             }
@@ -888,6 +890,87 @@ public class AnketaDB extends JFrame
                     JOptionPane.showMessageDialog(AnketaDB.this, "Анкета " + selectedSurvey.getName() + " и все ответы удалён.", "Удаление завершено", JOptionPane.INFORMATION_MESSAGE);
 
                     cards.show(container, "main"); //Shows main window after deletion
+                }
+                catch(SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            }
+        });
+
+        //Adds ActionListener to the survey edit save button
+        surveyEditSaveButton.addActionListener(new ActionListener() //TODO: finish
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                Component[] surveyEditQuestionsPanelComponents = surveyEditQuestionsPanel.getComponents(); //Gets the components in the survey edit questions panel
+
+                //Filters components array into new array with only the enabled JTextFields
+                JTextField[] surveyEditQuestionsPanelTextFields = new JTextField[0];
+                for(int i = 0; i < surveyEditQuestionsPanelComponents.length; i++)
+                {
+                    if(surveyEditQuestionsPanelComponents[i] instanceof JTextField) //Checks that component is JTextField
+                    {
+                        if(((JTextField)surveyEditQuestionsPanelComponents[i]).isEnabled()) //Checks that JTextField is enabled
+                        {
+                            JTextField[] newSurveyEditQuestionsPanelTextFields = new JTextField[surveyEditQuestionsPanelTextFields.length + 1];
+
+                            for(int j = 0; j < surveyEditQuestionsPanelTextFields.length; j++)
+                            {
+                                newSurveyEditQuestionsPanelTextFields[j] = surveyEditQuestionsPanelTextFields[j];
+                            }
+                            newSurveyEditQuestionsPanelTextFields[newSurveyEditQuestionsPanelTextFields.length - 1] = (JTextField)surveyEditQuestionsPanelComponents[i];
+
+                            surveyEditQuestionsPanelTextFields = newSurveyEditQuestionsPanelTextFields;
+                        }
+                    }
+                }
+
+                //Checks that each text field has text, aborts if it finds an empty text field
+                for(JTextField textfield : surveyEditQuestionsPanelTextFields)
+                {
+                    if(textfield.getText().trim().isEmpty())
+                    {
+                        JOptionPane.showMessageDialog(AnketaDB.this, "Есть пустые вопросы. Не смог сохранить анкету.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                }
+
+                Question[] newQuestions = selectedSurvey.getQuestions(); //Array which stores the new questions of the survey
+                int selectedSurveyId = -1; //Stores the id of the response in the database
+
+                try
+                {
+                    selectedSurveyId = selectedSurvey.getSQLId(databaseConnection);
+                }
+                catch(SQLException exception)
+                {
+                    //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                for(int i = 0; i < newQuestions.length; i++) //Pushes the questions in the text fields to newQuestions
+                {
+                    newQuestions[i].setText(surveyEditQuestionsPanelTextFields[i].getText());
+                }
+
+                //Generates SQL update which edits the survey in the database
+                String update = "UPDATE surveys SET ";
+                for(int i = 0; i < newQuestions.length - 1; i++)
+                {
+                    update += "q" + (i + 1) + " = \"" + filterString(newQuestions[i].getText().trim()) + "\", ";
+                }
+                update += "q" + newQuestions.length + " = \"" + filterString(newQuestions[newQuestions.length - 1].getText().trim()) + "\" WHERE id = " + selectedSurveyId + ";";
+
+                //Attempts to execute the update
+                try
+                {
+                    statement.executeUpdate(update);
+                    AnketaDB.this.setTitle("Список Анкет");
+                    cards.show(container, "listOfSurveys");
                 }
                 catch(SQLException exception)
                 {
@@ -982,9 +1065,7 @@ public class AnketaDB extends JFrame
 
     public static void main(String[] args) throws IOException, SQLException
     {
-        //!TEST CODE
         JFrame frame = new AnketaDB();
         frame.setVisible(true);
-        //!TEST CODE
     }
 }

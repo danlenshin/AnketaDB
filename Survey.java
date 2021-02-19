@@ -75,6 +75,11 @@ public class Survey
         this.year = year;
     }
 
+    public void setQuestions(Question[] questions)
+    {
+        this.questions = questions;
+    }
+
     //Adds a question to the questions array
     public void addQuestion(Question question)
     {
