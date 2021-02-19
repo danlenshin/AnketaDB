@@ -273,6 +273,22 @@ public class AnketaDB extends JFrame
 
         Container surveyEditQuestionsContainer = new Container();
 
+        JLabel surveyEditNameLabel = new JLabel("Название");
+        surveyEditNameLabel.setBounds(150, 20, 100, 20);
+        surveyEdit.add(surveyEditNameLabel);
+
+        JTextField surveyEditNameTextField = new JTextField();
+        surveyEditNameTextField.setBounds(210, 20, 440, 20);
+        surveyEdit.add(surveyEditNameTextField);
+
+        JLabel surveyEditYearLabel = new JLabel("Год");
+        surveyEditYearLabel.setBounds(180, 50, 100, 20);
+        surveyEdit.add(surveyEditYearLabel);
+
+        JTextField surveyEditYearTextField = new JTextField();
+        surveyEditYearTextField.setBounds(210, 50, 100, 20);
+        surveyEdit.add(surveyEditYearTextField);
+
         JButton surveyEditSaveButton = new JButton("Сохранить");
         surveyEditSaveButton.setBounds(200, 500, 150, 50);
         surveyEdit.add(surveyEditSaveButton);
@@ -286,11 +302,38 @@ public class AnketaDB extends JFrame
         surveyEditQuestionsContainer.add(surveyEditQuestionsPanel);
 
         JScrollPane surveyEditScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        surveyEditScrollPane.setBounds(50, 20, 700, 450);
+        surveyEditScrollPane.setBounds(50, 90, 700, 380);
         surveyEditScrollPane.setViewportView(surveyEditQuestionsPanel);
         surveyEdit.add(surveyEditScrollPane);
 
         container.add("surveyEdit", surveyEdit);
+
+        /*
+        Creating the survey answer window and adding it to cards
+        */
+        JPanel surveyAnswer = new JPanel();
+        surveyAnswer.setLayout(null);
+
+        Container surveyAnswerQuestionsContainer = new Container();
+
+        JButton surveyAnswerSaveButton = new JButton("Сохранить");
+        surveyAnswerSaveButton.setBounds(200, 500, 150, 50);
+        surveyAnswer.add(surveyAnswerSaveButton);
+
+        JButton surveyAnswerCancelButton = new JButton("Отменить");
+        surveyAnswerCancelButton.setBounds(450, 500, 150, 50);
+        surveyAnswer.add(surveyAnswerCancelButton);
+
+        JPanel surveyAnswerQuestionsPanel = new JPanel();
+        surveyAnswerQuestionsPanel.setLayout(new BoxLayout(surveyAnswerQuestionsPanel, BoxLayout.Y_AXIS));
+        surveyAnswerQuestionsContainer.add(surveyAnswerQuestionsPanel);
+
+        JScrollPane surveyAnswerScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        surveyAnswerScrollPane.setBounds(50, 20, 700, 450);
+        surveyAnswerScrollPane.setViewportView(surveyAnswerQuestionsPanel);
+        surveyAnswer.add(surveyAnswerScrollPane);
+
+        container.add("surveyAnswer", surveyAnswer);
 
         /*
         Creating the response view window and adding it to cards
@@ -360,6 +403,7 @@ public class AnketaDB extends JFrame
         causeToShowCard(surveyCreationCancelButton, "main", this, "AnketaDB by Daniel Lenshin");
         causeToShowCard(responseViewBackButton, "main", this, "AnketaDB by Daniel Lenshin");
         causeToShowCard(surveyEditCancelButton, "listOfSurveys", this, "Список Анкет");
+        causeToShowCard(surveyAnswerCancelButton, "listOfSurveys", this, " Список Анкет");
 
         //Adds action listener to main screen search button
         mainSearchButton.addActionListener(new ActionListener()
@@ -795,8 +839,12 @@ public class AnketaDB extends JFrame
 
                 AnketaDB.this.setTitle("Редакторование: " + selectedSurvey.toString());
 
-                JTextField[] surveyEditTextFields = new JTextField[0];
-                JTextField[] surveyEditResponseTextFields = new JTextField[0];
+                //Sets the survey name and survey year to the selected survey values in the text fields
+                surveyEditNameTextField.setText(selectedSurvey.getName());
+                surveyEditYearTextField.setText("" + selectedSurvey.getYear());
+
+                JTextField[] surveyEditTextFields = new JTextField[0]; //Stores text fields to be added to the survey edit panel
+                JTextField[] surveyEditResponseTextFields = new JTextField[0]; //Stores disabled text fields representing answer space to be added to the survey edit panel
                 Question[] surveyEditQuestions = selectedSurvey.getQuestions();
 
                 //Pushes TextFields to array
@@ -900,11 +948,34 @@ public class AnketaDB extends JFrame
             }
         });
 
-        //Adds ActionListener to the survey edit save button
-        surveyEditSaveButton.addActionListener(new ActionListener() //TODO: finish
+        //Adds ActionListener to the list of surveys fill in button
+        listOfSurveysFillInButton.addActionListener(new ActionListener() //TODO: finish fill in button ActionListener
         {
             public void actionPerformed(ActionEvent e)
             {
+
+            }
+        });
+
+        //Adds ActionListener to the survey edit save button
+        surveyEditSaveButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //Checks if there is a valid survey name, aborts if it is empty
+                if(surveyEditNameTextField.getText().trim().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для название пустой. Не смог сохранить анкету.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
+                //Checks if there is a valid survey year, aborts if it is empty or invalid
+                if(!isInt(surveyEditYearTextField.getText().trim()))
+                {
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + surveyEditYearTextField.getText().trim() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 Component[] surveyEditQuestionsPanelComponents = surveyEditQuestionsPanel.getComponents(); //Gets the components in the survey edit questions panel
 
                 //Filters components array into new array with only the enabled JTextFields
@@ -951,6 +1022,10 @@ public class AnketaDB extends JFrame
                     JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+                
+                //Sets the name and year of the selected survey to the new name and year (for display purposes)
+                selectedSurvey.setName(surveyEditNameTextField.getText().trim());
+                selectedSurvey.setYear(Integer.parseInt(surveyEditYearTextField.getText().trim()));
 
                 for(int i = 0; i < newQuestions.length; i++) //Pushes the questions in the text fields to newQuestions
                 {
@@ -958,7 +1033,7 @@ public class AnketaDB extends JFrame
                 }
 
                 //Generates SQL update which edits the survey in the database
-                String update = "UPDATE surveys SET ";
+                String update = "UPDATE surveys SET surveyname = \"" + surveyEditNameTextField.getText().trim() + "\", surveyyear = " + surveyEditYearTextField.getText().trim() + ", ";
                 for(int i = 0; i < newQuestions.length - 1; i++)
                 {
                     update += "q" + (i + 1) + " = \"" + filterString(newQuestions[i].getText().trim()) + "\", ";
@@ -969,6 +1044,9 @@ public class AnketaDB extends JFrame
                 try
                 {
                     statement.executeUpdate(update);
+
+                    //Displays success message and changes to list of surveys window
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Анкета \"" + selectedSurvey.toString() + "\" успешно редактированно.", "Успех", JOptionPane.INFORMATION_MESSAGE);
                     AnketaDB.this.setTitle("Список Анкет");
                     cards.show(container, "listOfSurveys");
                 }
