@@ -69,8 +69,8 @@ public class AnketaDB extends JFrame
     Survey[] listOfSurveysResultsListElements = new Survey[0]; //Stores the elements of the list of surveys list on the list of surveys screen
 
     //Selected objects
-    Survey selectedSurvey; //Stores any one response that the program is dealing with
-    Response selectedResponse; //Stores any one survey that the program is dealing with
+    Survey selectedSurvey; //Stores any one survey that the program is dealing with
+    Response selectedResponse; //Stores any one response that the program is dealing with
 
     public AnketaDB() throws IOException, SQLException, JSONException
     {
@@ -107,9 +107,9 @@ public class AnketaDB extends JFrame
         JPanel main = new JPanel(); //Creates new JPanel for the main window
         main.setLayout(null); //Sets the layout of the main panel as null (since no layout manager is being used)
 
-        JButton mainSurveyCreationButton = new JButton("Создать Анкету");
-        mainSurveyCreationButton.setBounds(120, 20, 250, 50);
-        main.add(mainSurveyCreationButton);
+        JButton mainSurveyCreationButton = new JButton("Создать Анкету"); //Creates a JButton with the specified text
+        mainSurveyCreationButton.setBounds(120, 20, 250, 50); //Sets the bounds of the JButton on the panel
+        main.add(mainSurveyCreationButton); //Adds the JButton to the panel
 
         JButton mainListOfSurveysButton = new JButton("Список Анкет");
         mainListOfSurveysButton.setBounds(430, 20, 250, 50);
@@ -219,6 +219,8 @@ public class AnketaDB extends JFrame
         JPanel surveyCreation = new JPanel();
         surveyCreation.setLayout(null);
 
+        Container surveyCreationQuestionsContainer = new Container();
+
         JLabel surveyCreationNameLabel = new JLabel("Название");
         surveyCreationNameLabel.setBounds(150, 20, 100, 20);
         surveyCreation.add(surveyCreationNameLabel);
@@ -235,24 +237,6 @@ public class AnketaDB extends JFrame
         surveyCreationYearTextField.setBounds(210, 50, 100, 20);
         surveyCreation.add(surveyCreationYearTextField);
 
-        JLabel surveyCreationLastNameQuestionLabel = new JLabel("Фамилия");
-        surveyCreationLastNameQuestionLabel.setBounds(150, 100, 100, 20);
-        surveyCreation.add(surveyCreationLastNameQuestionLabel);
-
-        JTextField surveyCreationLastNameQuestionTextField = new JTextField();
-        surveyCreationLastNameQuestionTextField.setBounds(210, 100, 440, 20);
-        surveyCreationLastNameQuestionTextField.setEnabled(false);
-        surveyCreation.add(surveyCreationLastNameQuestionTextField);
-
-        JLabel surveyCreationFirstNameQuestionLabel = new JLabel("Имя", SwingConstants.RIGHT);
-        surveyCreationFirstNameQuestionLabel.setBounds(105, 125, 100, 20);
-        surveyCreation.add(surveyCreationFirstNameQuestionLabel);
-
-        JTextField surveyCreationFirstNameQuestionTextField = new JTextField();
-        surveyCreationFirstNameQuestionTextField.setBounds(210, 125, 440, 20);
-        surveyCreationFirstNameQuestionTextField.setEnabled(false);
-        surveyCreation.add(surveyCreationFirstNameQuestionTextField);
-
         JButton surveyCreationCreateButton = new JButton("Сделать");
         surveyCreationCreateButton.setBounds(240, getBounds().height - 80, 150, 30);
         surveyCreation.add(surveyCreationCreateButton);
@@ -268,6 +252,16 @@ public class AnketaDB extends JFrame
         JButton surveyCreationAddShortQuestionButton = new JButton("Добавь Короткий Вопрос");
         surveyCreationAddShortQuestionButton.setBounds(240, getBounds().height - 160, 320, 30);
         surveyCreation.add(surveyCreationAddShortQuestionButton);
+
+        JPanel surveyCreationQuestionsPanel = new JPanel();
+        surveyCreationQuestionsPanel.setLayout(new BoxLayout(surveyCreationQuestionsPanel, BoxLayout.Y_AXIS));
+        surveyCreationQuestionsContainer.add(surveyCreationQuestionsPanel);
+        
+        JScrollPane surveyCreationScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        surveyCreationScrollPane.setBounds(50, 90, 700, 330);
+        surveyCreationScrollPane.setViewportView(surveyCreationQuestionsPanel);
+        surveyCreationScrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        surveyCreation.add(surveyCreationScrollPane);
 
         container.add("surveyCreation", surveyCreation);
 
@@ -310,6 +304,7 @@ public class AnketaDB extends JFrame
         JScrollPane surveyEditScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         surveyEditScrollPane.setBounds(50, 90, 700, 380);
         surveyEditScrollPane.setViewportView(surveyEditQuestionsPanel);
+        surveyEditScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         surveyEdit.add(surveyEditScrollPane);
 
         container.add("surveyEdit", surveyEdit);
@@ -337,6 +332,7 @@ public class AnketaDB extends JFrame
         JScrollPane surveyAnswerScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         surveyAnswerScrollPane.setBounds(50, 20, 700, 450);
         surveyAnswerScrollPane.setViewportView(surveyAnswerQuestionsPanel);
+        surveyAnswerScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         surveyAnswer.add(surveyAnswerScrollPane);
 
         container.add("surveyAnswer", surveyAnswer);
@@ -368,6 +364,7 @@ public class AnketaDB extends JFrame
         JScrollPane responseViewScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         responseViewScrollPane.setBounds(50, 20, 700, 450);
         responseViewScrollPane.setViewportView(responseViewResponsesPanel);
+        responseViewScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         responseView.add(responseViewScrollPane);
 
         container.add("responseView", responseView);
@@ -395,6 +392,7 @@ public class AnketaDB extends JFrame
         JScrollPane responseEditScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         responseEditScrollPane.setBounds(50, 20, 700, 450);
         responseEditScrollPane.setViewportView(responseEditResponsesPanel);
+        responseEditScrollPane.getVerticalScrollBar().setUnitIncrement(10);
         responseEdit.add(responseEditScrollPane);
 
         container.add("responseEdit", responseEdit);
@@ -404,7 +402,6 @@ public class AnketaDB extends JFrame
         These ActionListeners are added to buttons which switch to a different window without manipulating any data
         */
         causeToShowCard(mainListOfSurveysButton, "listOfSurveys", this, "Список Анкет");
-        causeToShowCard(mainSurveyCreationButton, "surveyCreation", this, "Создание Анкеты");
         causeToShowCard(listOfSurveysBackButton, "main", this, "AnketaDB by Daniel Lenshin");
         causeToShowCard(surveyCreationCancelButton, "main", this, "AnketaDB by Daniel Lenshin");
         causeToShowCard(responseViewBackButton, "main", this, "AnketaDB by Daniel Lenshin");
@@ -487,6 +484,20 @@ public class AnketaDB extends JFrame
             }
         });
 
+        //Adds ActionListener to the main screen create survey button
+        mainSurveyCreationButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //Creates new survey
+                selectedSurvey = new Survey("", 0);
+
+                //Clears the survey creation panel of all added questions and shows it
+                surveyCreationQuestionsPanel.removeAll();
+                cards.show(container, "surveyCreation");
+            }
+        });
+
         //Adds ActionListener to the main screen select button
         mainSelectButton.addActionListener(new ActionListener()
         {
@@ -536,6 +547,173 @@ public class AnketaDB extends JFrame
                 mainResultsList.setListData(mainResultsListElements);
 
                 cards.show(container, "responseView"); //Shows response view window with the labels added
+            }
+        });
+
+        //TODO: implement survey creation
+        //Adds ActionListener to the survey creation add short question button
+        surveyCreationAddShortQuestionButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //Checks if survey is at 30 question limit
+                if(selectedSurvey.getQuestions().length >= 30)
+                {
+                    //TODO: add warning window
+                    return;
+                }
+
+                //Adds a short question to the survey being created
+                selectedSurvey.addQuestion(new Question("", false));
+
+                //Creates JComponents to be added to the questions panel
+                JTextField addedTextField = new JTextField();
+                addedTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+                addedTextField.setMaximumSize(new Dimension(1000, 25));
+
+                JButton addedButton = new JButton("Удалить Вопрос");
+                addedButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+                addedButton.setMaximumSize(new Dimension(200, 30));
+
+                //Adds ActionListener to button that causes it to delete question from the survey
+                //TODO: finish
+                addedButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        /*
+                        How this should work:
+                        -Obtain components of JPanel
+                        -Find components associated with addedButton (you can use either .equals() or == to test for exact same button)
+                        -Delete the components
+                        -Refresh the JPanel
+                        */
+
+                        //Obtains components of JPanel with questions
+                        Component[] surveyCreationQuestionsPanelComponents = surveyCreationQuestionsPanel.getComponents();
+
+                        //Finds index of addedButton in the components
+                        int addedButtonIndex = -1;
+                        for(int i = 0; i < surveyCreationQuestionsPanelComponents.length; i++)
+                        {
+                            if(surveyCreationQuestionsPanelComponents[i] == addedButton)
+                            {
+                                addedButtonIndex = i;
+                                break;
+                            }
+                        }
+
+                        //TODO: delete question in selectedSurvey object
+                        //Creates array of JButtons in the JPanel
+                        JButton[] surveyCreationQuestionsPanelButtons = new JButton[0];
+                        for(int i = 0; i < surveyCreationQuestionsPanelComponents.length; i++)
+                        {
+                            if(surveyCreationQuestionsPanelComponents[i] instanceof JButton)
+                            {
+                                JButton[] newSurveyCreationQuestionsPanelButtons = new JButton[surveyCreationQuestionsPanelButtons.length + 1];
+                                for(int j = 0; j < surveyCreationQuestionsPanelButtons.length; j++)
+                                {
+                                    newSurveyCreationQuestionsPanelButtons[j] = surveyCreationQuestionsPanelButtons[j];
+                                }
+                                newSurveyCreationQuestionsPanelButtons[newSurveyCreationQuestionsPanelButtons.length - 1] = (JButton)surveyCreationQuestionsPanelComponents[i];
+                                surveyCreationQuestionsPanelButtons = newSurveyCreationQuestionsPanelButtons;
+                            }
+                        }
+
+                        //Finds the index of addedButton in array of JButtons
+                        int addedButtonButtonsIndex = -1;
+                        for(int i = 0; i < surveyCreationQuestionsPanelButtons.length; i++)
+                        {
+                            if(surveyCreationQuestionsPanelButtons[i] == addedButton)
+                            {
+                                addedButtonButtonsIndex = i;
+                                break;
+                            }
+                        }
+
+                        //Creates new questions array without the question associated with addedButton
+                        Question[] selectedSurveyQuestions = selectedSurvey.getQuestions();
+                        Question[] newSelectedSurveyQuestions = new Question[selectedSurveyQuestions.length - 1];
+                        for(int i = 0; i < addedButtonButtonsIndex; i++)
+                        {
+                            newSelectedSurveyQuestions[i] = selectedSurveyQuestions[i];
+                        }
+                        for(int i = addedButtonButtonsIndex + 1; i < newSelectedSurveyQuestions.length; i++)
+                        {
+                            newSelectedSurveyQuestions[i] = selectedSurveyQuestions[i - 1];
+                        }
+
+                        //Sets the new survey questions
+                        selectedSurvey.setQuestions(newSelectedSurveyQuestions);
+
+                        //!TEST
+                        for(Question question : newSelectedSurveyQuestions)
+                        {
+                            System.out.println("Q:" + question.getText());
+                        }
+                        System.out.println("-");
+
+                        //Deletes the button and associated components from the JPanel
+                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex - 2]); //JTextField with question text
+                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex - 1]); //Box which separates JTextField and JButton
+                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex]); //JButton
+                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 1]); //Box which separates JButton and next question
+
+                        //Refreshes the panel
+                        surveyCreationQuestionsPanel.revalidate();
+                        surveyCreationQuestionsPanel.repaint();
+                    }
+                });
+
+                //Adds JComponents to questions panel
+                surveyCreationQuestionsPanel.add(addedTextField);
+                surveyCreationQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+                surveyCreationQuestionsPanel.add(addedButton);
+                surveyCreationQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 25)));
+
+                //Refreshes JPanel
+                surveyCreationQuestionsPanel.revalidate();
+                surveyCreationQuestionsPanel.repaint();
+            }
+        });
+
+        //Adds ActionListener to the survey creation screen add long question button
+        surveyCreationAddLongQuestionButton.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //Checks if survey is at 30 question limit
+                if(selectedSurvey.getQuestions().length >= 30)
+                {
+                    //TODO: add warning window
+                    return;
+                }
+
+                //Adds a long question to the survey being created
+                selectedSurvey.addQuestion(new Question("", true));
+
+                //Creates JComponents to be added to the questions panel
+                //TODO: add component which differentiates long question from short question
+                JTextField addedTextField = new JTextField();
+                addedTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
+                addedTextField.setMaximumSize(new Dimension(1000, 25));
+
+                JButton addedButton = new JButton("Удалить Вопрос");
+                addedButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+                addedButton.setMaximumSize(new Dimension(200, 30));
+
+                //Adds ActionListener to button that causes it to delete question from the survey
+                //TODO: create the ActionListener
+
+                //Adds JComponents to questions panel
+                surveyCreationQuestionsPanel.add(addedTextField);
+                surveyCreationQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+                surveyCreationQuestionsPanel.add(addedButton);
+                surveyCreationQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 25)));
+
+                //Refreshes JPanel
+                surveyCreationQuestionsPanel.revalidate();
+                surveyCreationQuestionsPanel.repaint();
             }
         });
 
@@ -911,6 +1089,10 @@ public class AnketaDB extends JFrame
                 surveyEditTextFields[0].setEditable(false);
                 surveyEditTextFields[1].setEditable(false);
 
+                //Clears list of surveys JList
+                listOfSurveysResultsListElements = new Survey[0];
+                listOfSurveysResultsList.setListData(listOfSurveysResultsListElements);
+
                 cards.show(container, "surveyEdit"); //Shows survey edit window with elements added
             }
         });
@@ -961,7 +1143,7 @@ public class AnketaDB extends JFrame
         });
 
         //Adds ActionListener to the list of surveys fill in button
-        listOfSurveysFillInButton.addActionListener(new ActionListener() //TODO: implement null selection protection
+        listOfSurveysFillInButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -1116,6 +1298,10 @@ public class AnketaDB extends JFrame
                 try
                 {
                     statement.executeUpdate(update);
+
+                    //Clears list of surveys results list before returning to list of surveys window
+                    listOfSurveysResultsListElements = new Survey[0];
+                    listOfSurveysResultsList.setListData(listOfSurveysResultsListElements);
 
                     //Displays success message and changes to list of surveys window
                     JOptionPane.showMessageDialog(AnketaDB.this, "Анкета \"" + selectedSurvey.toString() + "\" успешно редактированно.", "Успех", JOptionPane.INFORMATION_MESSAGE);
