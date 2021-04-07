@@ -152,8 +152,11 @@ public class AnketaDB extends JFrame
         main.add(mainResultsLabel);
 
         JList<Response> mainResultsList = new JList<Response>(mainResultsListElements);
-        mainResultsList.setBounds(150, 300, 500, 175);
-        main.add(mainResultsList);
+
+        JScrollPane mainResultsListScrollPane = new JScrollPane();
+        mainResultsListScrollPane.setBounds(150, 300, 500, 175);
+        mainResultsListScrollPane.setViewportView(mainResultsList);
+        main.add(mainResultsListScrollPane);
 
         JButton mainSelectButton = new JButton("Выбрать");
         mainSelectButton.setBounds(300, 490, 200, 50);
@@ -192,8 +195,11 @@ public class AnketaDB extends JFrame
         listOfSurveys.add(listOfSurveysSearchButton);
 
         JList<Survey> listOfSurveysResultsList = new JList<Survey>(listOfSurveysResultsListElements);
-        listOfSurveysResultsList.setBounds(150, 160, 500, 300);
-        listOfSurveys.add(listOfSurveysResultsList);
+
+        JScrollPane listOfSurveysResultsListScrollPane = new JScrollPane();
+        listOfSurveysResultsListScrollPane.setBounds(150, 160, 500, 300);
+        listOfSurveysResultsListScrollPane.setViewportView(listOfSurveysResultsList);
+        listOfSurveys.add(listOfSurveysResultsListScrollPane);
 
         JButton listOfSurveysEditButton = new JButton("Редактировать");
         listOfSurveysEditButton.setBounds(30, 480, 170, 50);
@@ -218,8 +224,6 @@ public class AnketaDB extends JFrame
         */
         JPanel surveyCreation = new JPanel();
         surveyCreation.setLayout(null);
-
-        Container surveyCreationQuestionsContainer = new Container();
 
         JLabel surveyCreationNameLabel = new JLabel("Название");
         surveyCreationNameLabel.setBounds(150, 20, 100, 20);
@@ -255,7 +259,6 @@ public class AnketaDB extends JFrame
 
         JPanel surveyCreationQuestionsPanel = new JPanel();
         surveyCreationQuestionsPanel.setLayout(new BoxLayout(surveyCreationQuestionsPanel, BoxLayout.Y_AXIS));
-        surveyCreationQuestionsContainer.add(surveyCreationQuestionsPanel);
         
         JScrollPane surveyCreationScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         surveyCreationScrollPane.setBounds(50, 90, 700, 330);
@@ -270,8 +273,6 @@ public class AnketaDB extends JFrame
         */
         JPanel surveyEdit = new JPanel();
         surveyEdit.setLayout(null);
-
-        Container surveyEditQuestionsContainer = new Container();
 
         JLabel surveyEditNameLabel = new JLabel("Название");
         surveyEditNameLabel.setBounds(150, 20, 100, 20);
@@ -299,7 +300,6 @@ public class AnketaDB extends JFrame
 
         JPanel surveyEditQuestionsPanel = new JPanel();
         surveyEditQuestionsPanel.setLayout(new BoxLayout(surveyEditQuestionsPanel, BoxLayout.Y_AXIS));
-        surveyEditQuestionsContainer.add(surveyEditQuestionsPanel);
 
         JScrollPane surveyEditScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         surveyEditScrollPane.setBounds(50, 90, 700, 380);
@@ -315,8 +315,6 @@ public class AnketaDB extends JFrame
         JPanel surveyAnswer = new JPanel();
         surveyAnswer.setLayout(null);
 
-        Container surveyAnswerQuestionsContainer = new Container();
-
         JButton surveyAnswerSaveButton = new JButton("Сохранить");
         surveyAnswerSaveButton.setBounds(200, 500, 150, 50);
         surveyAnswer.add(surveyAnswerSaveButton);
@@ -327,7 +325,6 @@ public class AnketaDB extends JFrame
 
         JPanel surveyAnswerQuestionsPanel = new JPanel();
         surveyAnswerQuestionsPanel.setLayout(new BoxLayout(surveyAnswerQuestionsPanel, BoxLayout.Y_AXIS));
-        surveyAnswerQuestionsContainer.add(surveyAnswerQuestionsPanel);
 
         JScrollPane surveyAnswerScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         surveyAnswerScrollPane.setBounds(50, 20, 700, 450);
@@ -343,8 +340,6 @@ public class AnketaDB extends JFrame
         JPanel responseView = new JPanel();
         responseView.setLayout(null);
 
-        Container responseViewResponsesContainer = new Container();
-
         JButton responseViewEditButton = new JButton("Редактировать");
         responseViewEditButton.setBounds(80, getBounds().height - 100, 200, 50);
         responseView.add(responseViewEditButton);
@@ -359,7 +354,6 @@ public class AnketaDB extends JFrame
 
         JPanel responseViewResponsesPanel = new JPanel(); //This panel is viewed in the JScrollPane
         responseViewResponsesPanel.setLayout(new BoxLayout(responseViewResponsesPanel, BoxLayout.Y_AXIS));
-        responseViewResponsesContainer.add(responseViewResponsesPanel);
 
         JScrollPane responseViewScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         responseViewScrollPane.setBounds(50, 20, 700, 450);
@@ -375,8 +369,6 @@ public class AnketaDB extends JFrame
         JPanel responseEdit = new JPanel();
         responseEdit.setLayout(null);
 
-        Container responseEditResponsesContainer = new Container();
-
         JButton responseEditSaveButton = new JButton("Сохранить");
         responseEditSaveButton.setBounds(200, 500, 150, 50);
         responseEdit.add(responseEditSaveButton);
@@ -387,7 +379,6 @@ public class AnketaDB extends JFrame
 
         JPanel responseEditResponsesPanel = new JPanel();
         responseEditResponsesPanel.setLayout(new BoxLayout(responseEditResponsesPanel, BoxLayout.Y_AXIS));
-        responseEditResponsesContainer.add(responseEditResponsesPanel);
 
         JScrollPane responseEditScrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         responseEditScrollPane.setBounds(50, 20, 700, 450);
@@ -572,8 +563,7 @@ public class AnketaDB extends JFrame
                 cards.show(container, "responseView"); //Shows response view window with the labels added
             }
         });
-
-        //TODO: implement survey creation
+        
         //Adds ActionListener to the survey creation add short question button
         surveyCreationAddShortQuestionButton.addActionListener(new ActionListener()
         {
