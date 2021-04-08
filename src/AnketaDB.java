@@ -425,7 +425,7 @@ public class AnketaDB extends JFrame
                 else
                 {
                     //Displays warning message and does not execute query if year is not empty but invalid
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + mainSearchYearTextField.getText().trim() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Неправельный формат поля \"Год\": " + mainSearchYearTextField.getText().trim(), "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }              
                 
@@ -442,7 +442,7 @@ public class AnketaDB extends JFrame
 
                     if(responseids.length == 0) //Checks if responseids is empty, shows "no responses found" message
                     {
-                        JOptionPane.showMessageDialog(AnketaDB.this, "Не мог найти ответы с данным вводам.", "Внимание", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(AnketaDB.this, "Ответы на анкету с такими даннами не найденны.", "Внимание", JOptionPane.INFORMATION_MESSAGE);
                     }
 
                     for(int id : responseids) //Adds response objects to JList
@@ -469,7 +469,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -572,7 +572,7 @@ public class AnketaDB extends JFrame
                 //Checks if survey is at 30 question limit
                 if(selectedSurvey.getQuestions().length >= 30)
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Анкеты не могут иметь большее 30 вопрос", "Внимание", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Количество вопросы в анкете не может быть большее 30.", "Внимание", JOptionPane.INFORMATION_MESSAGE);
                     return;
                 }
 
@@ -681,7 +681,7 @@ public class AnketaDB extends JFrame
                 //Checks if survey is at 30 question limit
                 if(selectedSurvey.getQuestions().length >= 30)
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Анкеты не могут иметь большее 30 вопрос", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Количество вопросы в анкете не может быть большее 30.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -792,7 +792,7 @@ public class AnketaDB extends JFrame
                 //Checks if a valid name and year is entered
                 if(surveyCreationNameTextField.getText().trim().isEmpty())
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Название нет", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Поля \"Название\" не может быть пустым.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -802,7 +802,7 @@ public class AnketaDB extends JFrame
                 }
                 catch(NumberFormatException exception)
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Год " + surveyCreationYearTextField.getText().trim() + " недействительный год", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Неправельный формат поля \"Год\": " + surveyCreationYearTextField.getText().trim(), "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -876,7 +876,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -952,7 +952,7 @@ public class AnketaDB extends JFrame
             {
                 //Asks user if they want to delete the response
                 Object[] options = {"Да", "Нет"}; //Change dialog buttons to display in Russian
-                int deleteResponse = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить ответ \"" + selectedResponse.toString() + "\"? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+                int deleteResponse = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить ответ \"" + selectedResponse.toString() + "\"? (Удалёные данны не будут сохраннены!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 
                 //Stops execution if user selects "no" or the X button
                 if(deleteResponse == JOptionPane.NO_OPTION || deleteResponse == JOptionPane.CLOSED_OPTION)
@@ -976,7 +976,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -1010,12 +1010,12 @@ public class AnketaDB extends JFrame
                 //Checks if a valid first and last name has been inputted, aborts if not
                 if(responseEditResponsesPanelTextComponents[0].getText().trim().isEmpty())
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для фамилия пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Поле \"Фамилия\" не может быть пустым.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 else if(responseEditResponsesPanelTextComponents[1].getText().trim().isEmpty())
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для имя пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Поле \"Имя\" не может быть пустым.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -1029,7 +1029,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -1090,7 +1090,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -1129,7 +1129,7 @@ public class AnketaDB extends JFrame
                 else
                 {
                     //Displays warning message and does not execute query if year is not empty but invalid
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + listOfSurveysSearchYearTextField.getText().trim() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Неправельный формат поля \"Год\": " + listOfSurveysSearchYearTextField.getText().trim(), "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -1146,7 +1146,7 @@ public class AnketaDB extends JFrame
 
                     if(surveyids.length == 0) //Checks if surveyids is empty, shows "no surveys found" message
                     {
-                        JOptionPane.showMessageDialog(AnketaDB.this, "Не мог найти анкеты с данным вводам.", "Внимание", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(AnketaDB.this, "Анкеты с такими даннами не найденны.", "Внимание", JOptionPane.INFORMATION_MESSAGE);
                     }
 
                     for(int id : surveyids) //Adds survey objects to JList
@@ -1173,7 +1173,7 @@ public class AnketaDB extends JFrame
                 catch (SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -1277,7 +1277,7 @@ public class AnketaDB extends JFrame
 
                 //Asks user if they want to delete the survey and all responses
                 Object[] options = {"Да", "Нет"}; //Change dialog buttons to display in Russian
-                int deleteSurvey = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить анкета \"" + selectedSurvey.getName() + "\" и все ответы к нему? (Удалёных данных будет потеренно навсегда!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+                int deleteSurvey = JOptionPane.showOptionDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + "Вы уверен что вы хотите удалить анкету \"" + selectedSurvey.getName() + "\" и все ответы на неё? (Удалёные данны не будут сохраннены!)", "Внимание", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 
                 if(deleteSurvey == JOptionPane.NO_OPTION || deleteSurvey == JOptionPane.CLOSED_OPTION) //Returns if user presses "no" or the X button
                 {
@@ -1301,7 +1301,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -1384,14 +1384,14 @@ public class AnketaDB extends JFrame
                 //Checks if there is a valid survey name, aborts if it is empty
                 if(surveyEditNameTextField.getText().trim().isEmpty())
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для название пустой. Не смог сохранить анкету.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Поле \"Название\" не может быть пустым.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 //Checks if there is a valid survey year, aborts if it is empty or invalid
                 if(!isInt(surveyEditYearTextField.getText().trim()))
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод \"" + surveyEditYearTextField.getText().trim() + "\" недействительный год.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Неправельный формат поля \"Год\": " + surveyEditYearTextField.getText().trim(), "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -1438,7 +1438,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 
@@ -1476,7 +1476,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }
@@ -1512,12 +1512,12 @@ public class AnketaDB extends JFrame
                 //Checks if a valid first and last name has been inputted, aborts if not
                 if(surveyAnswerQuestionsPanelTextComponents[0].getText().trim().isEmpty())
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для фамилия пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Поле \"Фамилия\" не может быть пустым.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
                 else if(surveyAnswerQuestionsPanelTextComponents[1].getText().trim().isEmpty())
                 {
-                    JOptionPane.showMessageDialog(AnketaDB.this, "Ввод для имя пустой.", "Внимание", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "Поле \"Имя\" не может быть пустым.", "Внимание", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -1531,7 +1531,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
@@ -1566,7 +1566,7 @@ public class AnketaDB extends JFrame
                 catch(SQLException exception)
                 {
                     //Displays error message containing SQLException in case of fatal error (this should not be triggerable by the user)
-                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальную Ошибку", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AnketaDB.this, "<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
             }

@@ -2,7 +2,7 @@ AnketaDB<a name = "TOP"></a>
 ===================
 
 - - - - 
-## A Russian language survey database management software ##
+## A Russian language survey management software ##
 
 Anketa DB is a survey database management software. Within the program, users are able to create, edit, and delete surveys and responses to those surveys. All of the data is stored on an external MySQL server. 
 

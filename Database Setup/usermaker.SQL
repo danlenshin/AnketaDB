@@ -1,3 +1,3 @@
-CREATE USER 'anketauser'@'192.168.2.%' IDENTIFIED BY 'dostoyevsky';
-GRANT INSERT, SELECT, UPDATE, DELETE ON anketadb.* TO 'anketauser'@'localhost';
+CREATE USER 'anketauser'@'192.168.0.%' IDENTIFIED BY 'dostoyevsky';
+GRANT INSERT, SELECT, UPDATE, DELETE ON anketadb.* TO 'anketauser'@'192.168.0.%';
 FLUSH PRIVILEGES;
