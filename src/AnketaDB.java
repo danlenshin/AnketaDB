@@ -74,7 +74,7 @@ public class AnketaDB extends JFrame
 
     public AnketaDB() throws IOException, SQLException, JSONException
     {
-        settingsFile = new File("settings.json"); //Sets settingsFile as settings.json
+        settingsFile = new File(System.getProperty("user.dir") + "\\src\\settings.json"); //Sets settingsFile as settings.json
         settingsReader = new FileReader(settingsFile); //Set settingsReader to read from settingsFile
         while(settingsReader.ready()) //Sets settingsFileString as the content in settingsFile (formatted to remove tabs, spaces, and newlines)
         {
@@ -689,14 +689,23 @@ public class AnketaDB extends JFrame
                 selectedSurvey.addQuestion(new Question("", true));
 
                 //Creates JComponents to be added to the questions panel
-                //TODO: add component which differentiates long question from short question
+                //TODO: add component which differentiates long question from short question (textField max size 800, 100 color 185, 185, 185)
                 JTextField addedTextField = new JTextField();
                 addedTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
-                addedTextField.setMaximumSize(new Dimension(1000, 25));
+                addedTextField.setPreferredSize(new Dimension(1000, 20));
+                addedTextField.setMaximumSize(addedTextField.getPreferredSize());
+
+                JTextField addedAnswerField = new JTextField();
+                addedAnswerField.setAlignmentX(Component.LEFT_ALIGNMENT);
+                addedAnswerField.setEnabled(false);
+                addedAnswerField.setBackground(new Color(185, 185, 185));
+                addedAnswerField.setPreferredSize(new Dimension(1000, 50));
+                addedAnswerField.setMaximumSize(addedAnswerField.getPreferredSize());
 
                 JButton addedButton = new JButton("Удалить Вопрос");
                 addedButton.setAlignmentX(Component.LEFT_ALIGNMENT);
-                addedButton.setMaximumSize(new Dimension(200, 30));
+                addedButton.setPreferredSize(new Dimension(200, 25));
+                addedButton.setMaximumSize(addedButton.getPreferredSize());
 
                 //Adds ActionListener to button that causes it to delete question from the survey
                 addedButton.addActionListener(new ActionListener()
@@ -764,7 +773,10 @@ public class AnketaDB extends JFrame
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex - 2]); //JTextField with question text
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex - 1]); //Box which separates JTextField and JButton
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex]); //JButton
-                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 1]); //Box which separates JButton and next question
+                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 1]); //Box which separates JButton and Answer Field
+                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 2]); //Answer JTextField
+                        surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 3]); //Box which separates Answer Field and next question
+
 
                         //Refreshes the panel
                         surveyCreationQuestionsPanel.revalidate();
@@ -776,6 +788,8 @@ public class AnketaDB extends JFrame
                 surveyCreationQuestionsPanel.add(addedTextField);
                 surveyCreationQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 2)));
                 surveyCreationQuestionsPanel.add(addedButton);
+                surveyCreationQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 2)));
+                surveyCreationQuestionsPanel.add(addedAnswerField);
                 surveyCreationQuestionsPanel.add(Box.createRigidArea(new Dimension(0, 25)));
 
                 //Refreshes JPanel
