@@ -689,7 +689,6 @@ public class AnketaDB extends JFrame
                 selectedSurvey.addQuestion(new Question("", true));
 
                 //Creates JComponents to be added to the questions panel
-                //TODO: add component which differentiates long question from short question (textField max size 800, 100 color 185, 185, 185)
                 JTextField addedTextField = new JTextField();
                 addedTextField.setAlignmentX(Component.LEFT_ALIGNMENT);
                 addedTextField.setPreferredSize(new Dimension(1000, 20));
@@ -769,7 +768,6 @@ public class AnketaDB extends JFrame
                         selectedSurvey.setQuestions(newSelectedSurveyQuestions);
 
                         //Deletes the button and associated components from the JPanel
-                        //TODO: change this to delete long question associated component as well
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex - 2]); //JTextField with question text
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex - 1]); //Box which separates JTextField and JButton
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex]); //JButton

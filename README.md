@@ -10,8 +10,8 @@ Anketa DB is a survey database management software. Within the program, users ar
 In order to run the packaged .jar program, the machine running AnketaDB must have Java installed. 
 
 In order to run the source code, a JDK is required as well as two libraries that are not in the Java standard libraries. These are:
-- [org.json](https://stleary.github.io/JSON-java/)
-- [MySQL Connector-J](https://dev.mysql.com/downloads/connector/j/)
+- [org.json](https://github.com/stleary/JSON-java)
+- [MySQL Connector/J](https://dev.mysql.com/downloads/connector/j/)
 
 ### Setup
 Create a MySQL server that the machine running AnketaDB is able to connect to. This server can be on the machine itself, on the same local network as the machine, or on the internet. In the `Database Setup` folder you will find two SQL scripts. Run `tablemaker.SQL` on your database.
