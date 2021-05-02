@@ -1,3 +1,5 @@
+package main.java;
+
 import java.sql.ResultSet; //To allow creation of constructor based on ResultSet
 import java.sql.Statement; //To allow for the execution of queries and updates
 import java.sql.Connection; //To allow class to connect to an SQL database

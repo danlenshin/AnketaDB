@@ -1,3 +1,5 @@
+package main.java;
+
 public class Question 
 {
     public String text; //Text of question
