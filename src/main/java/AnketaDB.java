@@ -76,7 +76,7 @@ public class AnketaDB extends JFrame
 
     public AnketaDB() throws IOException, SQLException, JSONException
     {
-        settingsFile = new File(System.getProperty("user.dir") + "\\src\\main\\resources\\settings.json"); //Sets settingsFile as settings.json
+        settingsFile = new File(System.getProperty("user.dir") + "\\settings.json"); //Sets settingsFile as settings.json
         settingsReader = new FileReader(settingsFile); //Set settingsReader to read from settingsFile
         while(settingsReader.ready()) //Sets settingsFileString as the content in settingsFile (formatted to remove tabs, spaces, and newlines)
         {

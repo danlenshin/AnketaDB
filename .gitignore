@@ -2,4 +2,4 @@
 .vscode/
 
 #Ignore lib files
-*.jar
+lib/*.jar
