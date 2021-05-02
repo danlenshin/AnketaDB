@@ -1,2 +1,5 @@
+#Ignore VSCode settings files
 .vscode/
-lib/
+
+#Ignore lib files
+*.jar

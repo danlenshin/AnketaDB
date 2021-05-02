@@ -1,0 +1,3 @@
+Place the following .jar files in this directory
+-org.json (https://github.com/stleary/JSON-java)
+-MySQL Connector/J (https://dev.mysql.com/downloads/connector/j/)
