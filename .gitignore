@@ -3,3 +3,7 @@
 
 #Ignore lib files
 lib/*.jar
+
+#Ignore test files at root
+settings.json
+AnketaDB.jar

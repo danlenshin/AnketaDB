@@ -76,24 +76,40 @@ public class AnketaDB extends JFrame
 
     public AnketaDB() throws IOException, SQLException, JSONException
     {
-        settingsFile = new File(System.getProperty("user.dir") + "\\settings.json"); //Sets settingsFile as settings.json
-        settingsReader = new FileReader(settingsFile); //Set settingsReader to read from settingsFile
-        while(settingsReader.ready()) //Sets settingsFileString as the content in settingsFile (formatted to remove tabs, spaces, and newlines)
+        try
         {
-            settingsFileString += Character.toString(settingsReader.read());
+            settingsFile = new File(System.getProperty("user.dir") + "\\settings.json"); //Sets settingsFile as settings.json
+            settingsReader = new FileReader(settingsFile); //Set settingsReader to read from settingsFile
+            while(settingsReader.ready()) //Sets settingsFileString as the content in settingsFile (formatted to remove tabs, spaces, and newlines)
+            {
+                settingsFileString += Character.toString(settingsReader.read());
+            }
+            settingsFileString = settingsFileString.replaceAll("null", ""); //Removes the initial null character read from settings.json, which is "null" in the settingsFileString
+            settings = new JSONObject(settingsFileString.replaceAll("[^\\S]", "")); //Sets settings to a JSONObject with the contents of settingsFileString
+
+            //Sets username, password, and address equal to their counterparts in settings JSONobject
+            username = settings.getString("username");
+            password = settings.getString("password");
+            address = settings.getString("host");
+            schema = settings.getString("schema");
         }
-        settingsFileString = settingsFileString.replaceAll("null", ""); //Removes the initial null character read from settings.json, which is "null" in the settingsFileString
-        settings = new JSONObject(settingsFileString.replaceAll("[^\\S]", "")); //Sets settings to a JSONObject with the contents of settingsFileString
+        catch(IOException | JSONException exception) //Catches errors when retrieving settings
+        {
+            JOptionPane.showMessageDialog(AnketaDB.this, "Пожалуйста проверьте файл settings.json\n\n<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
 
-        //Sets username, password, and address equal to their counterparts in settings JSONobject
-        username = settings.getString("username");
-        password = settings.getString("password");
-        address = settings.getString("address");
-        schema = settings.getString("schema");
-
-        databaseConnection = DriverManager.getConnection(("jdbc:mysql://" + address), username, password); //Sets databaseConnection as the connection to the SQL server
-        statement = databaseConnection.createStatement(); //Sets statement to a statement on the connected database
-        statement.executeUpdate("USE " + schema + ";"); //Sets it so that all future queries query the schema specified in settings.json
+        try
+        {
+            databaseConnection = DriverManager.getConnection(("jdbc:mysql://" + address), username, password); //Sets databaseConnection as the connection to the SQL server
+            statement = databaseConnection.createStatement(); //Sets statement to a statement on the connected database
+            statement.executeUpdate("USE " + schema + ";"); //Sets it so that all future queries query the schema specified in settings.json
+        }
+        catch(SQLException exception)
+        {
+            JOptionPane.showMessageDialog(AnketaDB.this, "Пожалуйста проверьте конфигураций о база данных.\n\n<html><body><p style='width:300px;'>" + exception + "</p></body></html>", "Фатальная Ошибка", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
+        }
 
         cards = new CardLayout(); //Set cards to a new CardLayout object
         container = getContentPane(); //Sets the container to the content pane
@@ -776,7 +792,6 @@ public class AnketaDB extends JFrame
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 1]); //Box which separates JButton and Answer Field
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 2]); //Answer JTextField
                         surveyCreationQuestionsPanel.remove(surveyCreationQuestionsPanelComponents[addedButtonIndex + 3]); //Box which separates Answer Field and next question
-
 
                         //Refreshes the panel
                         surveyCreationQuestionsPanel.revalidate();

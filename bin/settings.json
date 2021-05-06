@@ -1,6 +1,6 @@
 {
     "username":"anketauser",
     "password":"dostoyevsky",
-    "address":"localhost",
+    "host":"localhost",
     "schema":"anketadb"
 }
