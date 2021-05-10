@@ -7,3 +7,4 @@ lib/*.jar
 #Ignore test files at root
 settings.json
 AnketaDB.jar
+jarmgmt.bat
