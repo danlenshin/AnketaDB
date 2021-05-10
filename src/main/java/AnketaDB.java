@@ -505,6 +505,10 @@ public class AnketaDB extends JFrame
                 selectedSurvey.addQuestion(new Question("Фамилия", false));
                 selectedSurvey.addQuestion(new Question("Имя", false));
                 
+                //Clears survey creation panel text fields
+                surveyCreationNameTextField.setText("");
+                surveyCreationYearTextField.setText("");
+
                 //Clears questions panel
                 surveyCreationQuestionsPanel.removeAll();
 
